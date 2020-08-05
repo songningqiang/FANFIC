@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+
+
 class oscillationparams
 {
 	public:
@@ -12,7 +14,7 @@ class oscillationparams
 			//initialize oscillation parameters with Nufit 5.0, with SK
 			if (ordering == "NO")
 			{
-        // Central value, lower error bar, upper error bar
+        // Central value, upper error bar, lower error bar
 				set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
 				set13(0.02219, 0.00062, 0.00063);       // sin^2 \theta_13
 				set23(0.573, 0.016, 0.020);             // sin^2 \theta 23
@@ -136,11 +138,75 @@ class JUNO : oscillationexperiment
 		double t12sqsigma = 0.002;
 };
 
+
+class HYPERK : oscillationexperiment
+{
+	public:
+		HYPERK(oscillationparams &osc) : oscillationexperiment(osc)
+		{
+			setosc(osc);
+		}
+		~HYPERK(){};
+		void setosc(oscillationparams &osc)
+		{
+			//set the standard deviation to be the smaller one between the curret value and
+			//the expected experimental value to be considered
+			if (dcpsigma < osc.getdcpbest()) osc.setdcp(osc.getdcpbest(), dcpsigma, osc.getdcpminus());
+      if (dcpsigma < osc.getdcpbest()) osc.setdcp(osc.getdcpbest(), osc.getdcpplus(),dcpsigma);
+			// if (t12sqsigma < osc.get12minus()) osc.set12(osc.get12best(), osc.get12plus(), t12sqsigma);
+      t23sqsigma = get_ds23(osc);
+      if (t23sqsigma < osc.get23plus()) osc.set23(osc.get23best(), t23sqsigma, osc.get23minus());
+      if (t23sqsigma < osc.get23minus()) osc.set23(osc.get23best(), osc.get23plus(), t23sqsigma);
+      // if (ds23 < osc.get23)
+		}
+	private:
+    double dcpsigma = 23.; // degrees
+		// double t12sqsigma = 0.002;
+    double t23sqsigma;
+
+    double get_ds23(oscillationparams &osc)
+    {
+      double dst;
+      double sin23 = osc.get12best();
+      // Polynomial fit to table in TDR
+      dst =  -3.8*sin23*sin23 + 3.83*sin23 - 0.948;
+      if (dst < 0.0)
+      {
+        std::cout << "Your HyperK error on s23 is negative. Better check that out";
+        dst  = 0.0;
+      }
+      return dst;
+    }
+
+      //  if (osc.getordering == "NO"):
+      // {
+      //
+      // }
+      //  else // Inverted hierarchy
+      //  {
+      //
+      //  }
+
+
+
+};
+
+
+
+
+
 int main()
 {
 	oscillationparams osc;
-	std::cout << "before JUNO: sigma = " << osc.get12plus() << std::endl;
+	std::cout << "before JUNO: sigma12 = " << osc.get12plus() << std::endl;
+  std::cout << "before JUNO: dsigma23 = " << osc.get23plus() << std::endl;
+  std::cout << "before JUNO: ddelta+ = " << osc.getdcpplus() << std::endl;
+  std::cout << "before JUNO: ddelta- = " << osc.getdcpminus() << std::endl;
 	JUNO JUNOEXP(osc);
-	std::cout << "after JUNO: sigma = " << osc.get12plus() << std::endl;
+	std::cout << "after JUNO: sigma12 = " << osc.get12plus() << std::endl;
+  HYPERK KYPERKEXP(osc);
+  std::cout << "after HyperK: ddelta+ = " << osc.getdcpplus() << std::endl;
+  std::cout << "after HyperK: ddelta- = " << osc.getdcpminus() << std::endl;
+    std::cout << "After HyperK: dsigma23 = " << osc.get23plus() << std::endl;
 	std::cout << "mass ordering: " << osc.getordering() << std::endl;
 }
