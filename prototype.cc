@@ -139,6 +139,7 @@ class JUNO : oscillationexperiment
 };
 
 
+/* Data from the HyperK experiment. Numbers from https://arxiv.org/pdf/1805.04163.pdf */
 class HYPERK : oscillationexperiment
 {
 	public:
@@ -157,22 +158,28 @@ class HYPERK : oscillationexperiment
       t23sqsigma = get_ds23(osc);
       if (t23sqsigma < osc.get23plus()) osc.set23(osc.get23best(), t23sqsigma, osc.get23minus());
       if (t23sqsigma < osc.get23minus()) osc.set23(osc.get23best(), osc.get23plus(), t23sqsigma);
+
+      //Delta m23
+      if (dm23sigma < osc.getdm31minus()) osc.setdm31(osc.getdm31best(), dm23sigma, osc.getdm31minus());
+      if (dm23sigma < osc.get23minus()) osc.set23(osc.get23best(), osc.getdm31plus(), dm23sigma);
+
       // if (ds23 < osc.get23)
 		}
 	private:
     double dcpsigma = 23.; // degrees
 		// double t12sqsigma = 0.002;
     double t23sqsigma;
+    double dm23sigma = 1.25e-5;
 
     double get_ds23(oscillationparams &osc)
     {
       double dst;
       double sin23 = osc.get12best();
-      // Polynomial fit to table in TDR
+      // Polynomial fit to table in TDR. This is wrong
       dst =  -3.8*sin23*sin23 + 3.83*sin23 - 0.948;
       if (dst < 0.0)
       {
-        std::cout << "Your HyperK error on s23 is negative. Better check that out";
+        std::cout << "This fit for hyperK was a great idea but it doesn't work, sorry";
         dst  = 0.0;
       }
       return dst;
@@ -186,8 +193,6 @@ class HYPERK : oscillationexperiment
       //  {
       //
       //  }
-
-
 
 };
 
