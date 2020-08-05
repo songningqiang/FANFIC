@@ -12,12 +12,13 @@ class oscillationparams
 			//initialize oscillation parameters with Nufit 5.0, with SK
 			if (ordering == "NO")
 			{
-				set12(0.304, 0.012, 0.012);
-				set13(0.02219, 0.00062, 0.00063);
-				set23(0.573, 0.016, 0.020);
-				setdcp(197, 27, 24);//\delta_{CP} in degrees
-				setdm21(7.42e-5, 0.21e-5, 0.20e-5);//\Delta m_{21}^2 in eV^2
-				setdm31(2.517e-3, 0.026e-3, 0.028e-3);//\Delta m_{31}^2 in eV^2
+        // Central value, lower error bar, upper error bar
+				set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.02219, 0.00062, 0.00063);       // sin^2 \theta_13
+				set23(0.573, 0.016, 0.020);             // sin^2 \theta 23
+				setdcp(197, 27, 24);                    //\delta_{CP} in degrees
+				setdm21(7.42e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.517e-3, 0.026e-3, 0.028e-3);  //\Delta m_{31}^2 in eV^2
 			}
 			else if (ordering == "IO")
 			{
@@ -81,7 +82,7 @@ class oscillationparams
 		double get13minus() {return t13sqsigmaminus;}
 		double get23best() {return t23sqbest;}
 		double get23plus() {return t23sqsigmaplus;}
-		double get23minus() {return t23sqsigmaminus;}				
+		double get23minus() {return t23sqsigmaminus;}
 		double getdm21best() {return dm21sqbest;}
 		double getdm21plus() {return dm21sqsigmaplus;}
 		double getdm21minus() {return dm21sqsigmaminus;}
@@ -109,6 +110,13 @@ class oscillationexperiment
 		virtual void setosc(oscillationparams &osc){}; //set oscillation parameters in an experiment
 };
 
+/* /////////////////////////////////////////////////////////////////////////////
+
+DATA FROM INDIVIDUAL EXPERIMENTS BELOW
+
+ ///////////////////////////////////////////////////////////////////////////// */
+
+/* Data from the JUNO experiment. Numbers taken from xxxx.xxxxx p.x Tab. y  */
 class JUNO : oscillationexperiment
 {
 	public:
@@ -119,10 +127,10 @@ class JUNO : oscillationexperiment
 		~JUNO(){};
 		void setosc(oscillationparams &osc)
 		{
-			//set the standard deviation to be the smaller one between the curret value and 
+			//set the standard deviation to be the smaller one between the curret value and
 			//the expected experimental value to be considered
 			if (t12sqsigma < osc.get12plus()) osc.set12(osc.get12best(), t12sqsigma, osc.get12minus());
-			if (t12sqsigma < osc.get12minus()) osc.set12(osc.get12best(), osc.get12plus(), t12sqsigma); 
+			if (t12sqsigma < osc.get12minus()) osc.set12(osc.get12best(), osc.get12plus(), t12sqsigma);
 		}
 	private:
 		double t12sqsigma = 0.002;
