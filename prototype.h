@@ -5,7 +5,8 @@
 #include <algorithm>
 
 //for linear interpolation
-#include "linterp/src/linterp.h"
+//credit: Ronaldo Carpio
+#include "linterp.h"
 
 
 //remove duplicated elements
@@ -90,7 +91,7 @@ class flavorregion
 class oscillationexperiment
 {
 	public:
-		oscillationexperiment(oscillationparams &osc, const std::string chi2file = "");
+		oscillationexperiment(const std::string chi2file = "");
 		~oscillationexperiment(){};
 		virtual void setosc(oscillationparams &osc){}; //set oscillation parameters in an experiment
 		void readchi2(std::string chi2file);
@@ -137,7 +138,7 @@ DATA FROM INDIVIDUAL EXPERIMENTS BELOW
 class JUNO : public oscillationexperiment
 {
 	public:
-		JUNO(oscillationparams &osc);
+		JUNO();
 		~JUNO(){};
 		void setosc(oscillationparams &osc);
 	private:
@@ -148,7 +149,7 @@ class JUNO : public oscillationexperiment
 class DUNE : public oscillationexperiment
 {
 	public:
-		DUNE(oscillationparams &osc, std::string chi2file = "");
+		DUNE(std::string chi2file = "");
 		~DUNE(){};
 		void setosc(oscillationparams &osc);
 	private:
@@ -160,7 +161,7 @@ class DUNE : public oscillationexperiment
 class HYPERK : public oscillationexperiment
 {
 	public:
-		HYPERK(oscillationparams &osc, std::string chi2file = "");
+		HYPERK(std::string chi2file = "");
 		~HYPERK(){};
 		void setosc(oscillationparams &osc);
 	private:
@@ -174,7 +175,7 @@ class HYPERK : public oscillationexperiment
 class NUFIT : public oscillationexperiment
 {
 	public:
-		NUFIT(oscillationparams &osc, std::string chi2file = "");
+		NUFIT(std::string chi2file = "");
 		~NUFIT(){};
 		void setosc(oscillationparams &osc);
 

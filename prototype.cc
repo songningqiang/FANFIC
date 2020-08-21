@@ -138,7 +138,7 @@ std::vector<double> flavorregion::evolveflavor(std::vector<double> comp_i, std::
 }
 
 
-oscillationexperiment::oscillationexperiment(oscillationparams &osc, const std::string chi2file) : schi2file(chi2file){}
+oscillationexperiment::oscillationexperiment(const std::string chi2file) : schi2file(chi2file){}
 void oscillationexperiment::readchi2(std::string chi2file)
 {
 	std::ifstream file(chi2file);
@@ -245,7 +245,7 @@ DATA FROM INDIVIDUAL EXPERIMENTS BELOW
 
 /* Data from the JUNO experiment. Numbers taken from xxxx.xxxxx p.x Tab. y  */
 
-JUNO::JUNO(oscillationparams &osc) : oscillationexperiment(osc) {}
+JUNO::JUNO() : oscillationexperiment() {}
 void JUNO::setosc(oscillationparams &osc)
 {
 	//set the standard deviation to be the smaller one between the curret value and
@@ -261,7 +261,7 @@ void JUNO::setosc(oscillationparams &osc)
 
 
 
-DUNE::DUNE(oscillationparams &osc, std::string chi2file) : oscillationexperiment(osc, chi2file)
+DUNE::DUNE(std::string chi2file) : oscillationexperiment(chi2file)
 {
 	readchi2(chi2file);
 }
@@ -276,7 +276,7 @@ void DUNE::setosc(oscillationparams &osc)
 
 /* Data from the HyperK experiment. Numbers from https://arxiv.org/pdf/1805.04163.pdf */
 
-HYPERK::HYPERK(oscillationparams &osc, std::string chi2file) : oscillationexperiment(osc, chi2file)
+HYPERK::HYPERK(std::string chi2file) : oscillationexperiment(chi2file)
 {
 	readchi2(chi2file);
 }
@@ -314,7 +314,7 @@ double HYPERK::get_ds23(oscillationparams &osc)
 }
 */
 
-NUFIT::NUFIT(oscillationparams &osc, std::string chi2file) : oscillationexperiment(osc, chi2file)
+NUFIT::NUFIT(std::string chi2file) : oscillationexperiment(chi2file)
 {
 	readchi2(chi2file);
 }
