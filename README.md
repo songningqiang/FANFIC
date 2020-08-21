@@ -5,8 +5,11 @@ g++ main.cc prototype.cc -o main
 Several inputs in main.cc need to be specified before running the code:
 
 Line 9: mass ordering
+
 Line 11: output file name
+
 Line 12: the octant of theta_23, this only makes a difference if DUNE or HYPERK is used
+
 Line 55: list of experiments to be used, instructions can be found in the comments above
 
 prototype.h is the header file containing class declaration, and prototype.cc include the definition of functions.
