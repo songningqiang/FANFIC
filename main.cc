@@ -9,7 +9,7 @@ int main()
 	std::string ordering = "NO"; //normal ordering or inverted ordering
 	int Max_samp = 5e6; //number of sampling
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
-	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max
+	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK
 	oscillationparams osc(ordering); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
 
 	//for JUNO
@@ -46,7 +46,7 @@ int main()
 	fname += "_HK.dat";
 	HYPERK HKEXP(fname);
 
-	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2, the last chi2 will be used
+	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the last chi2 will be used
 	//otherwise, the order of experiments doesn't matter
 	//it is suggested to use one of DUNE, NUFIT and HYPERK with/without JUNO since they come with chi2 tables
 	//if NUFIT is served, the NUFIT 5.0 t23-dcp chi2 table will be used
