@@ -6,7 +6,7 @@ int main()
 {
 
 	//setup
-	std::string ordering = "NO";
+	std::string ordering = "NO"; //normal ordering or inverted ordering
 	int Max_samp = 5e6; //number of sampling
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
 	bool useJUNO = true;
@@ -37,8 +37,8 @@ int main()
 	if (useNUFIT)
 	{
 	
-		if (ordering == "NO") {NUFIT *NF = new NUFIT(osc, "nufit_5.0_skyes_no_s23sq_dcp.dat"); NFp = NF;}
-		else if (ordering == "IO") {NUFIT *NF = new NUFIT(osc, "nufit_5.0_skyes_io_s23sq_dcp.dat"); NFp = NF;}
+		if (ordering == "NO") {NUFIT *NF = new NUFIT(osc, "data/nufit_5.0_skyes_no_s23sq_dcp.dat"); NFp = NF;}
+		else if (ordering == "IO") {NUFIT *NF = new NUFIT(osc, "data/nufit_5.0_skyes_io_s23sq_dcp.dat"); NFp = NF;}
 		else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
 	}
 
@@ -60,6 +60,7 @@ int main()
 	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2, the last chi2 will be used
 	experimentlist explist = {&JUNOEXP, DUNEp};
 	//experimentlist explist = {};
+	//experimentlist explist = {NFp};
 	oscillationprob oscprob(explist, osc); //this will initialize the total chi2 module
 	flavorregion flav; //this will initialize the flavor oscillation module	
 
