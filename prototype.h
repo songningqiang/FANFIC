@@ -106,11 +106,11 @@ class oscillationexperiment
 
 typedef std::vector<oscillationexperiment*> experimentlist;
 
-class oscillationprob
+class likelihood
 {
 	public:
-		oscillationprob(experimentlist explist, oscillationparams &oscparams);
-		~oscillationprob(){};
+		likelihood(experimentlist explist, oscillationparams &oscparams);
+		~likelihood(){};
 		void oscexperiments(experimentlist explist, oscillationparams &osc);
 		double sq(double x);	
 		double chisq(std::vector<double> oscinput);

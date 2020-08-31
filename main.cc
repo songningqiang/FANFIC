@@ -6,10 +6,20 @@ int main()
 {
 
 	//setup
+	int Max_samp = 5e6; //number of sampling	
 	std::string ordering = "NO"; //normal ordering or inverted ordering
-	int Max_samp = 5e6; //number of sampling
-	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
-	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK
+	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK	
+	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the last chi2 will be used
+	//otherwise, the order of experiments doesn't matter
+	//it is suggested to use one of DUNE, NUFIT and HYPERK with/without JUNO since they come with chi2 tables
+	//if NUFIT is served, the NUFIT 5.0 t23-dcp chi2 table will be used
+	//a complete list is {"JUNO", "NUFIT"/"HK"/"DUNE"}
+	//if leave the list emtpy, the default NUFIT 5.0 table will be used, assuming each parameter is gaussian
+	std::vector<std::string> experiments {"JUNO", "DUNE"};
+	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
+
+	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
+	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
 	oscillationparams osc(ordering); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
 
 	//for JUNO
@@ -52,15 +62,23 @@ int main()
 	//if NUFIT is served, the NUFIT 5.0 t23-dcp chi2 table will be used
 	//a complete list is {&JUNOEXP, &NF/&HKEXP/&DUNEEXP}
 	//if leave the list emtpy, the default NUFIT 5.0 table will be used, assuming each parameter is gaussian
-	experimentlist explist = {&JUNOEXP, &NF};
-
-	oscillationprob oscprob(explist, osc); //this will initialize the total chi2 module
+	//experimentlist explist = {&JUNOEXP, &NF};
+	experimentlist explist;
+	for (int i = 0; i < experiments.size(); ++i)
+	{
+		if (experiments[i] == "JUNO") {explist.push_back(&JUNOEXP); std::cout << "JUNO is included." << std::endl;}
+		if (experiments[i] == "NUFIT") {explist.push_back(&NF); std::cout << "NUFIT 5.0 chi2 is included." << std::endl;}
+		if (experiments[i] == "DUNE") {explist.push_back(&DUNEEXP); std::cout << "DUNE chi2 is included." << std::endl;}
+		if (experiments[i] == "HK") {explist.push_back(&HKEXP); std::cout << "HYPERK chi2 is included." << std::endl;}
+	}	
+	likelihood oscchi2(explist, osc); //this will initialize the total chi2 module
 	flavorregion flav; //this will initialize the flavor oscillation module	
 
 	prior oscprior;
 	FILE *fp;
  	fp = fopen(foutput.c_str(), "w");
  	fprintf(fp, "#nu_e nu_mu nu_tau chi2\n");
+ 	std:: cout << "Begin sampling..." << std::endl;
  	//start Monte Carlo
 	for (int i = 0; i < Max_samp; ++i)
 	{
@@ -70,12 +88,12 @@ int main()
 		double p_13 = oscprior.flatPrior(oscprior.rand01(),osc.get13best()-5.*osc.get13minus(), osc.get13best()+5.*osc.get13plus());
 		//if t23-dcp chi2 data is available, use the data range there, dcp is in the unit of degrees
 		double p_23, p_dcp;
-		if (oscprob.getchi2file() != "")
+		if (oscchi2.getchi2file() != "")
 		{
-			std::vector<double> v = oscprob.gett23sqdata();
+			std::vector<double> v = oscchi2.gett23sqdata();
 			p_23 = oscprior.flatPrior(oscprior.rand01(),*std::min_element(v.begin(), v.end()), 
 				*std::max_element(v.begin(), v.end()));
-			v = oscprob.getdcpdata();
+			v = oscchi2.getdcpdata();
 			p_dcp = oscprior.flatPrior(oscprior.rand01(),*std::min_element(v.begin(), v.end()), 
 				*std::max_element(v.begin(), v.end()));			
 		}
@@ -96,13 +114,14 @@ int main()
       	std::vector<double> comp_f = flav.evolveflavor(comp_i, oscp); //this will compute the flavor composition at the earth
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = 0.;
-      	if (oscprob.getchi2file() != "") chi = oscprob.chisqfromdata(oscp);
-      	else chi = oscprob.chisq(oscp);
+      	if (oscchi2.getchi2file() != "") chi = oscchi2.chisqfromdata(oscp);
+      	else chi = oscchi2.chisq(oscp);
       	//save to file, keep only those within 5sigma for 2 dof
 		if(chi < 30.) 
             fprintf(fp, "%1.4f %1.4f %1.4f %e\n", comp_f[0], comp_f[1], comp_f[2], chi);
 
 	}
 	fclose(fp);
+	std:: cout << "Done sampling, exit." << std::endl;
 
 }

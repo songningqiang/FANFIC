@@ -167,12 +167,12 @@ void oscillationexperiment::readchi2(std::string chi2file)
 }
 
 
-oscillationprob::oscillationprob(experimentlist explist, oscillationparams &oscparams)
+likelihood::likelihood(experimentlist explist, oscillationparams &oscparams)
 {
 	oscexperiments(explist, oscparams);
 	osc = oscparams;
 }
-void oscillationprob::oscexperiments(experimentlist explist, oscillationparams &osc)
+void likelihood::oscexperiments(experimentlist explist, oscillationparams &osc)
 {
 	for(int i = 0; i < explist.size(); i++)
 	{
@@ -197,11 +197,11 @@ void oscillationprob::oscexperiments(experimentlist explist, oscillationparams &
 		interp2d = interp_ML;
 	}
 }
-double oscillationprob::sq(double x)
+double likelihood::sq(double x)
 {
 	return x*x;
 }		
-double oscillationprob::chisq(std::vector<double> oscinput)
+double likelihood::chisq(std::vector<double> oscinput)
 {
 
 	double t12s=oscinput[0];
@@ -214,7 +214,7 @@ double oscillationprob::chisq(std::vector<double> oscinput)
     +sq(dcp-osc.getdcpbest())/sq((dcp>osc.getdcpbest())?osc.getdcpplus():osc.getdcpminus());
 }
 
-double oscillationprob::chisq1213(std::vector<double> oscinput)
+double likelihood::chisq1213(std::vector<double> oscinput)
 {
 	double t12s=oscinput[0];
 	double t13s=oscinput[1];
@@ -222,7 +222,7 @@ double oscillationprob::chisq1213(std::vector<double> oscinput)
     +sq(t13s-osc.get13best())/sq((t13s>osc.get13best())?osc.get13plus():osc.get13minus());
 }
 
-double oscillationprob::chisq23dcp(std::vector<double> oscinput)
+double likelihood::chisq23dcp(std::vector<double> oscinput)
 {
 	double t23s=oscinput[2];
 	double dcp=oscinput[3];
@@ -231,7 +231,7 @@ double oscillationprob::chisq23dcp(std::vector<double> oscinput)
 	else return 0.;
 
 }
-double oscillationprob::chisqfromdata(std::vector<double> oscinput)
+double likelihood::chisqfromdata(std::vector<double> oscinput)
 {
 	return chisq1213(oscinput) + chisq23dcp(oscinput);
 }		

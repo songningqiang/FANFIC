@@ -6,11 +6,11 @@ Several inputs in main.cc need to be specified before running the code:
 
 Line 9: mass ordering
 
-Line 11: output file name
+Line 11: the octant of theta_23, this only makes a difference if DUNE or HYPERK is used
 
-Line 12: the octant of theta_23, this only makes a difference if DUNE or HYPERK is used
+Line 18: list of experiments to be used, instructions can be found in the comments above
 
-Line 55: list of experiments to be used, instructions can be found in the comments above
+Line 19: output file name
 
 prototype.h is the header file containing class declaration, and prototype.cc include the definition of functions.
 
@@ -20,7 +20,7 @@ Additional experiments can be added as the derived class of oscillationexperimen
 
 flavorregion is a class to calculate the final flavor composition at the earth. This is done with the member function evolveflavor. New physics in neutrino propagation can be introduced by overwriting this class.
 
-oscillationprob is a class to calculate the total chi2. If no chi2 file served, the member function chisq will be called assuming gaussian. If served, chisqfromdata will be called instead.
+likelihood is a class to calculate the total chi2. If no chi2 file served, the member function chisq will be called assuming gaussian. If served, chisqfromdata will be called instead.
 
 prior is a class to randomly generate initial flavor composition and oscillation parameters. If necessary, priors other than flat can be implemented later.
 
