@@ -2,6 +2,10 @@ The main code is main.cc which outputs four columns in the output file: alpha_e,
 
 g++ main.cc prototype.cc -o main
 
+or simply
+
+make
+
 Several inputs in main.cc need to be specified before running the code:
 
 Line 9: mass ordering
