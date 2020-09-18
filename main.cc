@@ -16,7 +16,9 @@ int main()
 	//a complete list is {"JUNO", "NUFIT"/"HK"/"DUNE"}
 	//if leave the list emtpy, the default NUFIT 5.0 table will be used, assuming each parameter is gaussian
 	std::vector<std::string> experiments {"JUNO", "DUNE"};
-	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
+	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
+	bool randominitialflavor = false; //if true, sample initial flavor composition randomly from flat prior, otherwise, use the intial flavors below
+	std::vector<double> initialflavor {1./3., 2./3., 0}; //initial flavor composition at the source, must sum up to 1	
 
 	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
@@ -107,10 +109,14 @@ int main()
 		std::vector<double> oscp{p_12, p_13, p_23, p_dcp};
 		//initial flavor composition in the order of \nu_\mu, \nu_e, \nu_\tau
 		std::vector<double> comp_i(3,0.);
-		//draw random intial flavor composition
-      	comp_i[0] = oscprior.rand01();
-      	comp_i[1] = oscprior.flatPrior(oscprior.rand01(),0.,1.-comp_i[0]);
-      	comp_i[2] = 1.-comp_i[0]-comp_i[1];
+		if (randominitialflavor == true)
+		{
+			//draw random intial flavor composition
+	      	comp_i[0] = oscprior.rand01();
+	      	comp_i[1] = oscprior.flatPrior(oscprior.rand01(),0.,1.-comp_i[0]);
+	      	comp_i[2] = 1.-comp_i[0]-comp_i[1];
+	    }
+	    else comp_i = initialflavor;
       	std::vector<double> comp_f = flav.evolveflavor(comp_i, oscp); //this will compute the flavor composition at the earth
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = 0.;
