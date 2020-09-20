@@ -16,11 +16,21 @@ int main()
 	//a complete list is {"JUNO", "NUFIT"/"HK"/"DUNE"}
 	//if leave the list emtpy, the default NUFIT 5.0 table will be used, assuming each parameter is gaussian
 	std::vector<std::string> experiments {"JUNO", "DUNE"};
-	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
+	//Use user-specified dcp value or not, can be true only if HK or DUNE is used and upper octant is specified
+	//if false, the default Nufit5.0 bestfit will be implemented
+	//if false, 1.1pi is used for NO and 1.5pi is used for IO
+	bool customizedcp = true;
+	//True value of dcp in units of pi, this option is only available for HK and DUNE and upper octant
+	//For NO, choose between 0, 0.5 and 1, 1 corresponds to the Nufit5.0 bestfit of 1.1pi
+	//For IO, choose between 0, 1 and 1.5, 1.5 corresponds to the Nufit5.0 bestfit of 1.5pi
+	double dcpbest = 1.;
 	bool randominitialflavor = false; //if true, sample initial flavor composition randomly from flat prior, otherwise, use the intial flavors below
-	std::vector<double> initialflavor {1./3., 2./3., 0}; //initial flavor composition at the source, must sum up to 1	
+	std::vector<double> initialflavor {1./3., 2./3., 0}; //initial flavor composition at the source, must sum up to 1
+	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
 
 	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
+	if (customizedcp == true) std::cout << "Use customized delta_CP = " << dcpbest << "*pi." << std::endl;
+	else std::cout << "Use delta_CP from the bestfit of Nufit5.0." << std::endl;
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
 	oscillationparams osc(ordering); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
 
@@ -35,8 +45,26 @@ int main()
 	else {std::cout << "Wrong octant." << std::endl; exit(1);}		
 	if (ordering == "NO") fname += "NH";
 	else if (ordering == "IO") fname += "IH";
-	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
-	fname += "_cursol.dat";
+	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}	
+	fname += "_cursol";
+	if (customizedcp == true)
+	{
+		if (ordering == "NO")
+		{
+			if (dcpbest == 0.) fname += "_delta0";
+			else if (dcpbest == 0.5) fname += "_delta0.5";
+			else if (dcpbest == 1.) fname += "";
+			else {std::cout << "Wrong dcp specified, must choose in between 0, 0.5 and 1 for NO." << std::endl; exit(1);}
+		}
+		if (ordering == "IO")
+		{
+			if (dcpbest == 0.) fname += "_delta0";
+			else if (dcpbest == 1.) fname += "_delta1.0";
+			else if (dcpbest == 1.5) fname += "";
+			else {std::cout << "Wrong dcp specified, must choose in between 0, 1 and 1.5 for IO." << std::endl; exit(1);}
+		}
+	}			
+	fname += ".dat";
 	DUNE DUNEEXP(fname);
 
 
@@ -55,7 +83,25 @@ int main()
 	if (ordering == "NO") fname += "NH";
 	else if (ordering == "IO") fname += "IH";
 	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
-	fname += "_HK.dat";
+	fname += "_HK";
+	if (customizedcp == true)
+	{
+		if (ordering == "NO")
+		{
+			if (dcpbest == 0.) fname += "_delta0";
+			else if (dcpbest == 0.5) fname += "_delta0.5";
+			else if (dcpbest == 1.) fname += "";
+			else {std::cout << "Wrong dcp specified, must choose in between 0, 0.5 and 1 for NO." << std::endl; exit(1);}
+		}
+		if (ordering == "IO")
+		{
+			if (dcpbest == 0.) fname += "_delta0";
+			else if (dcpbest == 1.) fname += "_delta1.0";
+			else if (dcpbest == 1.5) fname += "";
+			else {std::cout << "Wrong dcp specified, must choose in between 0, 1 and 1.5 for IO." << std::endl; exit(1);}
+		}
+	}		
+	fname += ".dat";
 	HYPERK HKEXP(fname);
 
 	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the last chi2 will be used
