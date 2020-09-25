@@ -7,7 +7,7 @@ int main()
 
 	//setup
 	int Max_samp = 5e6; //number of sampling
-	double nufitversion = 5.0; //choose nufit version from {"1.0","1.1","1.2","1.3","2.0","2.1","2.2","3.0","3.1","3.2","4.0","4.1","5.0"}	
+	double nufitversion = 5.0; //choose nufit version from {1.0,1.1,1.2,1.3,2.0,2.1,2.2,3.0,3.1,3.2,4.0,4.1,5.0}	
 	std::string ordering = "NO"; //normal ordering or inverted ordering
 	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK	
 	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the last chi2 will be used
