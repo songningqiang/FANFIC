@@ -6,20 +6,21 @@ int main()
 {
 
 	//setup
-	int Max_samp = 5e6; //number of sampling	
+	int Max_samp = 5e6; //number of sampling
+	double nufitversion = 5.0; //choose nufit version from {"1.0","1.1","1.2","1.3","2.0","2.1","2.2","3.0","3.1","3.2","4.0","4.1","5.0"}	
 	std::string ordering = "NO"; //normal ordering or inverted ordering
 	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK	
 	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the last chi2 will be used
 	//otherwise, the order of experiments doesn't matter
 	//it is suggested to use one of DUNE, NUFIT and HYPERK with/without JUNO since they come with chi2 tables
-	//if NUFIT is served, the NUFIT 5.0 t23-dcp chi2 table will be used
+	//if NUFIT is served, the NUFIT vx.x t23-dcp chi2 table will be used if version>=2.0
 	//a complete list is {"JUNO", "NUFIT"/"HK"/"DUNE"}
-	//if leave the list emtpy, the default NUFIT 5.0 table will be used, assuming each parameter is gaussian
-	std::vector<std::string> experiments {"JUNO", "DUNE"};
+	//if leave the list emtpy, the default NUFIT vx.x table will be used, assuming each parameter is gaussian
+	std::vector<std::string> experiments {"NUFIT"};
 	//Use user-specified dcp value or not, can be true only if HK or DUNE is used and upper octant is specified
 	//if false, the default Nufit5.0 bestfit will be implemented
 	//if false, 1.1pi is used for NO and 1.5pi is used for IO
-	bool customizedcp = true;
+	bool customizedcp = false;
 	//True value of dcp in units of pi, this option is only available for HK and DUNE and upper octant
 	//For NO, choose between 0, 0.5 and 1, 1 corresponds to the Nufit5.0 bestfit of 1.1pi
 	//For IO, choose between 0, 1 and 1.5, 1.5 corresponds to the Nufit5.0 bestfit of 1.5pi
@@ -28,11 +29,15 @@ int main()
 	std::vector<double> initialflavor {1./3., 2./3., 0}; //initial flavor composition at the source, must sum up to 1
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
 
+
+
+	oscillationparams osc(ordering, nufitversion); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
+	std::cout << "Using Nufit version " << osc.getversion() << std::endl;
 	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
 	if (customizedcp == true) std::cout << "Use customized delta_CP = " << dcpbest << "*pi." << std::endl;
-	else std::cout << "Use delta_CP from the bestfit of Nufit5.0." << std::endl;
+	else std::cout << "Use delta_CP from the bestfit of Nufit" << osc.getversion() << "." << std::endl;
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
-	oscillationparams osc(ordering); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
+
 
 	//for JUNO
 	JUNO JUNOEXP;
@@ -68,10 +73,13 @@ int main()
 	DUNE DUNEEXP(fname);
 
 
-	//for NUFIT 5.0 t23-dcp chi2 table
-	if (ordering == "NO") fname = "data/nufit_5.0_skyes_no_s23sq_dcp.dat";
-	else if (ordering == "IO") fname = "data/nufit_5.0_skyes_io_s23sq_dcp.dat";
-	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
+	//for NUFIT vx.x t23-dcp chi2 table
+	fname = "";
+	if (nufitversion >= 2.0)
+	{
+		fname += "data/v"+std::to_string(int(nufitversion*10))+".release-data-"+ordering+"_s23sq_dcp.dat";
+		std::cout << "Nufit chi2 table " << fname << " is being used." << std::endl;
+	}
 	NUFIT NF(fname);
 
 	//for HyperK t23-dcp chi2 table
@@ -115,7 +123,7 @@ int main()
 	for (int i = 0; i < experiments.size(); ++i)
 	{
 		if (experiments[i] == "JUNO") {explist.push_back(&JUNOEXP); std::cout << "JUNO is included." << std::endl;}
-		if (experiments[i] == "NUFIT") {explist.push_back(&NF); std::cout << "NUFIT 5.0 chi2 is included." << std::endl;}
+		if (experiments[i] == "NUFIT") {explist.push_back(&NF); std::cout << "NUFIT" << osc.getversion() << " chi2 is included." << std::endl;}
 		if (experiments[i] == "DUNE") {explist.push_back(&DUNEEXP); std::cout << "DUNE chi2 is included." << std::endl;}
 		if (experiments[i] == "HK") {explist.push_back(&HKEXP); std::cout << "HYPERK chi2 is included." << std::endl;}
 	}	

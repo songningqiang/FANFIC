@@ -30,7 +30,7 @@ ForwardIterator remove_duplicates( ForwardIterator first, ForwardIterator last )
 class oscillationparams
 {
 	public:
-		oscillationparams(const std::string ordering = "NO");
+		oscillationparams(const std::string ordering = "NO", const double = 5.0);
 		~oscillationparams(){};
 
 		void set12(double t12sqb, double t12sqsigmap = NAN, double t12sqsigmam = NAN);
@@ -58,12 +58,14 @@ class oscillationparams
 		double getdcpplus() {return dcpsigmaplus;}
 		double getdcpminus() {return dcpsigmaminus;}
 		std::string getordering() {return ordering;}
+		std::string getversion() {return std::to_string(version);}
 
 	private:
 		double t12sqbest, t13sqbest, t23sqbest, dm21sqbest, dm31sqbest, dcpbest;
 		double t12sqsigmaplus, t13sqsigmaplus, t23sqsigmaplus, dm21sqsigmaplus, dm31sqsigmaplus, dcpsigmaplus;
 		double t12sqsigmaminus, t13sqsigmaminus, t23sqsigmaminus, dm21sqsigmaminus, dm31sqsigmaminus, dcpsigmaminus;
 		std::string ordering;
+		double version;
 };
 
 

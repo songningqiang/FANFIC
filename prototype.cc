@@ -1,27 +1,262 @@
 #include "prototype.h"
 
 
-oscillationparams::oscillationparams(const std::string ordering) : ordering(ordering)
+oscillationparams::oscillationparams(const std::string ordering, const double NUFITversion) : ordering(ordering), version(NUFITversion)
 {
-	//initialize oscillation parameters with Nufit 5.0, with SK
 	if (ordering == "NO")
 	{
-// Central value, upper error bar, lower error bar
-		set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
-		set13(0.02219, 0.00062, 0.00063);       // sin^2 \theta_13
-		set23(0.573, 0.016, 0.020);             // sin^2 \theta 23
-		setdcp(197, 27, 24);                    //\delta_{CP} in degrees
-		setdm21(7.42e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
-		setdm31(2.517e-3, 0.026e-3, 0.028e-3);  //\Delta m_{31}^2 in eV^2
+		// Central value, upper error bar, lower error bar
+		switch(int(version*10))
+		{
+			//initialize oscillation parameters with Nufit 5.0, with SK
+			case 50:
+				set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.02219, 0.00062, 0.00063);       // sin^2 \theta_13
+				set23(0.573, 0.016, 0.020);             // sin^2 \theta 23
+				setdcp(197., 27., 24.);                    //\delta_{CP} in degrees
+				setdm21(7.42e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.517e-3, 0.026e-3, 0.028e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 4.1, with SK
+			case 41:
+				set12(0.310, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02237, 0.00066, 0.00065);       // sin^2 \theta_13
+				set23(0.563, 0.018, 0.024);             // sin^2 \theta 23
+				setdcp(221., 39., 28.);                    //\delta_{CP} in degrees
+				setdm21(7.39e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.528e-3, 0.029e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 4.0, with SK
+			case 40:
+				set12(0.310, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02240, 0.00065, 0.00066);       // sin^2 \theta_13
+				set23(0.582, 0.015, 0.019);             // sin^2 \theta 23
+				setdcp(217., 40., 28.);                    //\delta_{CP} in degrees
+				setdm21(7.39e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.525e-3, 0.033e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.2
+			case 32:
+				set12(0.307, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02206, 0.00075, 0.00075);       // sin^2 \theta_13
+				set23(0.538, 0.033, 0.069);             // sin^2 \theta 23
+				setdcp(234., 43., 31.);                    //\delta_{CP} in degrees
+				setdm21(7.40e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.494e-3, 0.033e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.1
+			case 31:
+				set12(0.307, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02195, 0.00075, 0.00074);       // sin^2 \theta_13
+				set23(0.565, 0.025, 0.120);             // sin^2 \theta 23
+				setdcp(228., 51., 33.);                    //\delta_{CP} in degrees
+				setdm21(7.40e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.515e-3, 0.035e-3, 0.035e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.0
+			case 30:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.02166, 0.00075, 0.00075);       // sin^2 \theta_13
+				set23(0.441, 0.027, 0.021);             // sin^2 \theta 23
+				setdcp(261., 51., 59.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.524e-3, 0.039e-3, 0.040e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with 2.2
+			case 22:
+				set12(0.308, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02163, 0.00074, 0.00074);       // sin^2 \theta_13
+				set23(0.440, 0.023, 0.019);             // sin^2 \theta 23
+				setdcp(289., 38., 51);                    //\delta_{CP} in degrees
+				setdm21(7.49e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.526e-3, 0.039e-3, 0.037e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 2.1 "LID"
+			case 21:
+				set12(0.308, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0219, 0.0010, 0.0010);       // sin^2 \theta_13
+				set23(0.451, 0.038, 0.025);             // sin^2 \theta 23
+				setdcp(303., 39., 50.);                    //\delta_{CP} in degrees
+				setdm21(7.49e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.477e-3, 0.042e-3, 0.042e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 2.0
+			case 20:
+				set12(0.304, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0218, 0.0010, 0.0010);       // sin^2 \theta_13
+				set23(0.452, 0.052, 0.028);             // sin^2 \theta 23
+				setdcp(306., 39., 70.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.457e-3, 0.047e-3, 0.047e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.3, lower octant with RSBL
+			case 13:
+				set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0219, 0.0010, 0.0011);       // sin^2 \theta_13
+				set23(0.451, 0.001, 0.001);             // sin^2 \theta 23
+				setdcp(251., 67., 59.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.458e-3, 0.002e-3, 0.002e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.2, lower octant with RSBL
+			case 12:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0231, 0.0019, 0.0019);       // sin^2 \theta_13
+				set23(0.446, 0.008, 0.008);             // sin^2 \theta 23
+				setdcp(266., 55., 63.);                    //\delta_{CP} in degrees
+				setdm21(7.45e-5, 0.19e-5, 0.16e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.417e-3, 0.014e-3, 0.014e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.1 with RSBL
+			case 11:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0231, 0.0023, 0.022);       // sin^2 \theta_13
+				set23(0.437, 0.061, 0.031);             // sin^2 \theta 23
+				setdcp(341., 58., 46.);                    //\delta_{CP} in degrees
+				setdm21(7.45e-5, 0.19e-5, 0.16e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.421e-3, 0.022e-3, 0.023e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.0, lower octant with RSBL
+			case 10:
+				set12(0.302, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0227, 0.0023, 0.0024);       // sin^2 \theta_13
+				set23(0.413, 0.037, 0.025);             // sin^2 \theta 23
+				setdcp(300., 66., 138.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.18e-5, 0.19e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.473e-3, 0.070e-3, 0.067e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			default:
+				std::cout << "Nufit version doesn't match any record, exit." << std::endl;
+				exit(1);																																																									
+		}
+
 	}
 	else if (ordering == "IO")
 	{
-		set12(0.304, 0.013, 0.012);
-		set13(0.022838, 0.00063, 0.00062);
-		set23(0.575, 0.016, 0.019);
-		setdcp(282, 26, 30);
-		setdm21(7.42e-5, 0.21e-5, 0.20e-5);
-		setdm31(-2.498e-3, 0.028e-3, 0.028e-3);
+		// Central value, upper error bar, lower error bar
+		switch(int(version*10))
+		{
+			//initialize oscillation parameters with Nufit 5.0, with SK
+			case 50:
+				set12(0.304, 0.013, 0.012);
+				set13(0.022838, 0.00063, 0.00062);
+				set23(0.575, 0.016, 0.019);
+				setdcp(282, 26, 30);
+				setdm21(7.42e-5, 0.21e-5, 0.20e-5);
+				setdm31(-2.498e-3, 0.028e-3, 0.028e-3);
+				break;
+			//initialize oscillation parameters with Nufit 4.1, with SK
+			case 41:
+				set12(0.310, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02259, 0.00065, 0.00065);       // sin^2 \theta_13
+				set23(0.565, 0.017, 0.022);             // sin^2 \theta 23
+				setdcp(282., 23., 25.);                    //\delta_{CP} in degrees
+				setdm21(7.39e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.510e-3, 0.030e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 4.0, with SK
+			case 40:
+				set12(0.310, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02263, 0.00065, 0.00066);       // sin^2 \theta_13
+				set23(0.582, 0.015, 0.018);             // sin^2 \theta 23
+				setdcp(280., 25., 28.);                    //\delta_{CP} in degrees
+				setdm21(7.39e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(2.515e-3, 0.034e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.2
+			case 32:
+				set12(0.307, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02227, 0.00074, 0.00074);       // sin^2 \theta_13
+				set23(0.554, 0.023, 0.033);             // sin^2 \theta 23
+				setdcp(278., 26., 29.);                    //\delta_{CP} in degrees
+				setdm21(7.40e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.465e-3, 0.032e-3, 0.031e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.1
+			case 31:
+				set12(0.307, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02212, 0.00074, 0.00073);       // sin^2 \theta_13
+				set23(0.572, 0.021, 0.028);             // sin^2 \theta 23
+				setdcp(281., 30., 33.);                    //\delta_{CP} in degrees
+				setdm21(7.40e-5, 0.21e-5, 0.20e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.483e-3, 0.034e-3, 0.035e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 3.0
+			case 30:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.02179, 0.00076, 0.00076);       // sin^2 \theta_13
+				set23(0.587, 0.020, 0.024);             // sin^2 \theta 23
+				setdcp(277., 40., 46.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.514e-3, 0.038e-3, 0.041e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with 2.2
+			case 22:
+				set12(0.308, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.02175, 0.00075, 0.00074);       // sin^2 \theta_13
+				set23(0.584, 0.018, 0.022);             // sin^2 \theta 23
+				setdcp(269., 39., 45.);                    //\delta_{CP} in degrees
+				setdm21(7.49e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.518e-3, 0.038e-3, 0.037e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 2.1 "LID"
+			case 21:
+				set12(0.308, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0219, 0.0010, 0.0010);       // sin^2 \theta_13
+				set23(0.576, 0.023, 0.033);             // sin^2 \theta 23
+				setdcp(262., 51., 57.);                    //\delta_{CP} in degrees
+				setdm21(7.49e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.465e-3, 0.041e-3, 0.043e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 2.0
+			case 20:
+				set12(0.304, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0219, 0.0011, 0.0010);       // sin^2 \theta_13
+				set23(0.579, 0.025, 0.037);             // sin^2 \theta 23
+				setdcp(254., 63., 62.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.449e-3, 0.048e-3, 0.047e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.3, upper octant with RSBL
+			case 13:
+				set12(0.304, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0219, 0.0010, 0.0011);       // sin^2 \theta_13
+				set23(0.577, 0.027, 0.0035);             // sin^2 \theta 23
+				setdcp(251., 67., 59.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.19e-5, 0.17e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.448e-3, 0.047e-3, 0.047e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.2, upper octant with RSBL
+			case 12:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0231, 0.0019, 0.0019);       // sin^2 \theta_13
+				set23(0.593, 0.027, 0.043);             // sin^2 \theta 23
+				setdcp(266., 55., 63.);                    //\delta_{CP} in degrees
+				setdm21(7.45e-5, 0.19e-5, 0.16e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.411e-3, 0.062e-3, 0.062e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.1 with RSBL
+			case 11:
+				set12(0.306, 0.012, 0.012);             // sin^2 \theta_12
+				set13(0.0231, 0.0023, 0.022);       // sin^2 \theta_13
+				set23(0.437, 0.061, 0.031);             // sin^2 \theta 23
+				setdcp(341., 58., 46.);                    //\delta_{CP} in degrees
+				setdm21(7.45e-5, 0.19e-5, 0.16e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.410e-3, 0.062e-3, 0.063e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			//initialize oscillation parameters with Nufit 1.0, upper octant with RSBL
+			case 10:
+				set12(0.302, 0.013, 0.012);             // sin^2 \theta_12
+				set13(0.0227, 0.0023, 0.0024);       // sin^2 \theta_13
+				set23(0.594, 0.021, 0.022);             // sin^2 \theta 23
+				setdcp(300., 66., 138.);                    //\delta_{CP} in degrees
+				setdm21(7.50e-5, 0.18e-5, 0.19e-5);     //\Delta m_{21}^2 in eV^2
+				setdm31(-2.427e-3, 0.042e-3, 0.065e-3);  //\Delta m_{31}^2 in eV^2
+				break;
+			default:
+				std::cout << "Nufit version doesn't match any record, exit." << std::endl;
+				exit(1);																																																									
+		}		
 	}
 	else
 	{
@@ -316,7 +551,8 @@ double HYPERK::get_ds23(oscillationparams &osc)
 
 NUFIT::NUFIT(std::string chi2file) : oscillationexperiment(chi2file)
 {
-	readchi2(chi2file);
+	if (chi2file == "") std::cout << "Warning: Nufit chi2 is supposed to be used but no chi2 table served, this could happen is Nufit version < 2.0\n" << std::endl;
+	else readchi2(chi2file);
 }
 void NUFIT::setosc(oscillationparams &osc) {}
 
