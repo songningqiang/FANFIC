@@ -84,7 +84,8 @@ class flavorregion
 		double V31s(double q12, double q13, double q23, double dcp);
 		double V32s(double q12, double q13, double q23, double dcp);
 		double V33s(double q13, double q23);
-		std::vector<double> evolveflavor(std::vector<double> comp_i, std::vector<double> oscinput);
+		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> oscinput);
+		std::vector<double> evolvefrommass(std::vector<double> comp_i, std::vector<double> oscinput);
 	private:
 		std::vector<double> comp_f;	
 };

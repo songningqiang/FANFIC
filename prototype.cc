@@ -343,7 +343,7 @@ double flavorregion::V33s(double q13, double q23)
 {
 	return sq(cos(q13)) * sq(cos(q23));
 }
-std::vector<double> flavorregion::evolveflavor(std::vector<double> comp_i, std::vector<double> oscinput)
+std::vector<double> flavorregion::evolvefromflavor(std::vector<double> comp_i, std::vector<double> oscinput)
 {
 	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
 	double q12=asin(sqrt(oscinput[0]));
@@ -367,6 +367,33 @@ std::vector<double> flavorregion::evolveflavor(std::vector<double> comp_i, std::
 			for(int j = 0; j < 3; j++)
 				P += Vsq[i][j] * Vsq[k][j];
 			comp_f[k] += P * comp_i[i];
+		}
+	}
+	return comp_f;
+}
+
+
+std::vector<double> flavorregion::evolvefrommass(std::vector<double> comp_i, std::vector<double> oscinput)
+{
+	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
+	double q12=asin(sqrt(oscinput[0]));
+	double q13=asin(sqrt(oscinput[1]));
+	double q23=asin(sqrt(oscinput[2]));
+	double dcp=oscinput[3]/180.*M_PI;
+	Vsq[0][0] = V11s(q12, q13);
+	Vsq[0][1] = V12s(q12, q13);
+	Vsq[0][2] = V13s(q13);
+	Vsq[1][0] = V21s(q12, q13, q23, dcp);
+	Vsq[1][1] = V22s(q12, q13, q23, dcp);
+	Vsq[1][2] = V23s(q13, q23);
+	Vsq[2][0] = V31s(q12, q13, q23, dcp);
+	Vsq[2][1] = V32s(q12, q13, q23, dcp);
+	Vsq[2][2] = V33s(q13, q23);
+
+	for(int k = 0; k < 3; k++){
+		comp_f[k] = 0.;
+		for(int i = 0; i < 3; i++){
+			comp_f[k] += Vsq[k][i] * comp_i[i];
 		}
 	}
 	return comp_f;

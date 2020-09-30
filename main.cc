@@ -6,7 +6,7 @@ int main()
 {
 
 	//setup
-	int Max_samp = 5e6; //number of sampling
+	int Max_samp = 1e7; //number of sampling
 	double nufitversion = 5.0; //choose nufit version from {1.0,1.1,1.2,1.3,2.0,2.1,2.2,3.0,3.1,3.2,4.0,4.1,5.0}	
 	std::string ordering = "NO"; //normal ordering or inverted ordering
 	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK	
@@ -25,14 +25,16 @@ int main()
 	//For NO, choose between 0, 0.5 and 1, 1 corresponds to the Nufit5.0 bestfit of 1.1pi
 	//For IO, choose between 0, 1 and 1.5, 1.5 corresponds to the Nufit5.0 bestfit of 1.5pi
 	double dcpbest = 1.;
-	bool randominitialflavor = false; //if true, sample initial flavor composition randomly from flat prior, otherwise, use the intial flavors below
-	std::vector<double> initialflavor {1./3., 2./3., 0}; //initial flavor composition at the source, must sum up to 1
-	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
+	bool neutrinodecay = false; //if true, will turn on neutrino decay where f_{\alpha} = \sum_i |U_{\alpha i}|^2*f_i
+	bool randominitialflavor = true; //if true, sample initial flavor/mass composition randomly from flat prior, otherwise, use the intial flavors/masses below
+	std::vector<double> initialflavor {1., 0., 0.}; //initial flavor (if neutrinodecay=false) or mass (if neutrinodecay=true) composition at the source, must sum up to 1
+	std::string foutput = "test1.txt"; //name of output file to save flavor compositions and chi2	
 
 
 
 	oscillationparams osc(ordering, nufitversion); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
 	std::cout << "Using Nufit version " << osc.getversion() << std::endl;
+	if (neutrinodecay == true) std::cout << "Neutrino decay is assumed." << std::endl;
 	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
 	if (customizedcp == true) std::cout << "Use customized delta_CP = " << dcpbest << "*pi." << std::endl;
 	else std::cout << "Use delta_CP from the bestfit of Nufit" << osc.getversion() << "." << std::endl;
@@ -171,7 +173,9 @@ int main()
 	      	comp_i[2] = 1.-comp_i[0]-comp_i[1];
 	    }
 	    else comp_i = initialflavor;
-      	std::vector<double> comp_f = flav.evolveflavor(comp_i, oscp); //this will compute the flavor composition at the earth
+      	std::vector<double> comp_f(3, 0.);
+      	if (neutrinodecay==false) comp_f= flav.evolvefromflavor(comp_i, oscp); //this will compute the flavor composition at the earth
+      	else comp_f= flav.evolvefrommass(comp_i, oscp); //this will compute the flavor composition at the earth from a combination of mass states
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = 0.;
       	if (oscchi2.getchi2file() != "") chi = oscchi2.chisqfromdata(oscp);
