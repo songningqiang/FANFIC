@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <numeric>
+
 
 //for linear interpolation
 //credit: Ronaldo Carpio
@@ -69,6 +71,32 @@ class oscillationparams
 };
 
 
+class matrixdata
+{
+	public:
+		std::vector<double> Usqdata, Usqchi2;	
+};
+
+//in case of non-unitarity, parameterize the mixing matrix directly
+class nonunitflavorregion
+{
+	public:
+		nonunitflavorregion(const int year = 2020);
+		~nonunitflavorregion(){};
+		void readchi2(std::string chi2file);
+		void fillchi2(const int year);
+		double chisq(std::vector<double> Usqinput);
+		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> Usqinput, bool normalized = false);
+		std::vector<matrixdata> getUsqdata() {return Usq;}
+		//2d array of pointers pointing to the interpolation function of each matrix element and its chi2
+		InterpMultilinear<1, double> *interp1d[3*3];		
+	private:
+		std::vector<matrixdata> Usq;
+		std::vector<double> comp_f {std::vector<double>(3,0.)};	
+	
+};
+
+
 class flavorregion
 {
 	public:
@@ -87,7 +115,7 @@ class flavorregion
 		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> oscinput);
 		std::vector<double> evolvefrommass(std::vector<double> comp_i, std::vector<double> oscinput);
 	private:
-		std::vector<double> comp_f;	
+		std::vector<double> comp_f {std::vector<double>(3,0.)};	
 };
 
 

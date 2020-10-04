@@ -28,7 +28,7 @@ int main()
 	bool neutrinodecay = false; //if true, will turn on neutrino decay where f_{\alpha} = \sum_i |U_{\alpha i}|^2*f_i
 	bool randominitialflavor = true; //if true, sample initial flavor/mass composition randomly from flat prior, otherwise, use the intial flavors/masses below
 	std::vector<double> initialflavor {1., 0., 0.}; //initial flavor (if neutrinodecay=false) or mass (if neutrinodecay=true) composition at the source, must sum up to 1
-	std::string foutput = "test1.txt"; //name of output file to save flavor compositions and chi2	
+	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
 
 
 
@@ -45,7 +45,7 @@ int main()
 	JUNO JUNOEXP;
 
 	//for DUNE
-	std::string fname = "data/deltacp_theta23";
+	std::string fname = "data/deltacp_theta23sq_Chi2/deltacp_theta23";
 	if (t23oct == "upper") fname += "_";
 	else if (t23oct == "lower") fname += "_woct_";
 	else if (t23oct == "max") fname += "_max_";
@@ -79,13 +79,13 @@ int main()
 	fname = "";
 	if (nufitversion >= 2.0)
 	{
-		fname += "data/v"+std::to_string(int(nufitversion*10))+".release-data-"+ordering+"_s23sq_dcp.dat";
+		fname += "data/deltacp_theta23sq_Chi2/v"+std::to_string(int(nufitversion*10))+".release-data-"+ordering+"_s23sq_dcp.dat";
 		std::cout << "Nufit chi2 table " << fname << " is being used." << std::endl;
 	}
 	NUFIT NF(fname);
 
 	//for HyperK t23-dcp chi2 table
-	fname = "data/deltacp_theta23";
+	fname = "data/deltacp_theta23sq_Chi2/deltacp_theta23";
 	if (t23oct == "upper") fname += "_";
 	else if (t23oct == "lower") fname += "_woct_";
 	else if (t23oct == "max") fname += "_max_";

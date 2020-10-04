@@ -302,6 +302,113 @@ void oscillationparams::setdcp(double dcpb, double dcpsigmap, double dcpsigmam)
 	if (!std::isnan(dcpsigmam)) dcpsigmaminus = dcpsigmam;
 }
 
+
+nonunitflavorregion::nonunitflavorregion(const int year)
+{
+	fillchi2(year);
+}
+
+void nonunitflavorregion::readchi2(std::string chi2file)
+{
+	std::ifstream file(chi2file);
+	if (!file) {
+	    std::cerr << "Unable to open file " << chi2file << ", file not found." << std::endl;
+	    exit(1);   // call system to stop
+	}			
+	std::string line;
+	matrixdata U;
+	while(getline(file, line))
+	{
+		//if start with # or empty do nothing
+		if (!(line.rfind("#", 0) == 0) && (line.find_first_not_of(" ") != std::string::npos))
+		{
+			double tmp1, tmp2;
+			sscanf(line.c_str(), "%lf %lf", &tmp1, &tmp2);
+			U.Usqdata.push_back(tmp1);
+			U.Usqchi2.push_back(tmp2);
+		}
+	}
+	//normalize chi2
+	double minchi2 = *min_element(U.Usqchi2.begin(), U.Usqchi2.end());
+	for(int i = 0; i < U.Usqchi2.size(); i++) U.Usqchi2[i] -= minchi2;
+	//cut too large chi2
+	auto it = U.Usqchi2.begin();
+	auto itd = U.Usqdata.begin();
+	while (it != U.Usqchi2.end())
+	{
+		if (*it > 16.)
+		{
+			itd = U.Usqdata.erase(itd);
+			it = U.Usqchi2.erase(it);
+		}
+		else {++it; ++itd;}
+	}
+	Usq.push_back(U);
+}
+
+void nonunitflavorregion::fillchi2(const int year)
+{
+	std::string syear;
+	if (year == 2020) syear = "Current";
+	else if (year == 2040) syear = "Future";
+	else std::cerr << "Wrong year specified" << ", choose 2020 or 2040." << std::endl;
+	char flavor[] = "emt";
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			std::string fname = "data/non-unitarity_Chi2/U";
+			fname += flavor[i]+std::to_string(j+1)+"Sq_"+syear+"_Chi2.dat";
+			readchi2(fname);
+			std::vector< std::vector<double>::iterator > grid_iter_list;
+			grid_iter_list.push_back(Usq[i*3+j].Usqdata.begin());
+			array<int,1> grid_sizes;
+			grid_sizes[0] = Usq[i*3+j].Usqdata.size();
+			auto interp_ML = new InterpMultilinear<1, double> (grid_iter_list.begin(), grid_sizes.begin(), Usq[i*3+j].Usqchi2.data(), Usq[i*3+j].Usqchi2.data() + Usq[i*3+j].Usqchi2.size());
+			interp1d[i*3+j] = interp_ML;
+
+		}
+	}
+}
+
+double nonunitflavorregion::chisq(std::vector<double> Usqinput)
+{
+	double chi2 = 0.;
+	for (int i = 0; i < 9; ++i)
+	{
+		array<double,1> args = {Usqinput[i]};
+		chi2 += interp1d[i]->interp(args.begin());
+	}
+	return chi2;
+}
+
+std::vector<double> nonunitflavorregion::evolvefromflavor(std::vector<double> comp_i, std::vector<double> Usqinput, bool normalized)
+{
+	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
+	for (int i = 0; i < 9; ++i)
+	{
+		Vsq[i/3][i%3] = Usqinput[i];
+	}
+
+	for(int k = 0; k < 3; k++){
+		comp_f[k] = 0.;
+		for(int i = 0; i < 3; i++){
+			double P = 0;
+			for(int j = 0; j < 3; j++)
+				P += Vsq[i][j] * Vsq[k][j];
+			comp_f[k] += P * comp_i[i];
+		}
+	}
+	if (normalized == true)
+	{
+		//sum of final flavor composition
+		double fsum = accumulate(comp_f.begin(), comp_f.end(), 0.);
+		for (int i = 0; i < comp_f.size(); ++i) comp_f[i] /= fsum;
+	}
+	return comp_f;	
+}
+
+
 flavorregion::flavorregion() : comp_f(3, 0.){}
 double flavorregion::sq(double x)
 {
