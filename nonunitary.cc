@@ -11,7 +11,7 @@ int main()
 
 	bool normalized = true; //if true, will normalize the sum of final flavor compositions to be 1
 	bool randominitialflavor = true; //if true, sample initial flavor/mass composition randomly from flat prior, otherwise, use the intial flavors/masses below
-	std::vector<double> initialflavor {1., 0., 0.}; //initial flavor (if neutrinodecay=false) or mass (if neutrinodecay=true) composition at the source, must sum up to 1
+	std::vector<double> initialflavor {1./3., 2./3., 0.}; //initial flavor composition at the source, must sum up to 1
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
 
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 

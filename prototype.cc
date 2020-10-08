@@ -385,9 +385,18 @@ double nonunitflavorregion::chisq(std::vector<double> Usqinput)
 std::vector<double> nonunitflavorregion::evolvefromflavor(std::vector<double> comp_i, std::vector<double> Usqinput, bool normalized)
 {
 	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
+	std::vector<double> Nalpha (3, 0.);
 	for (int i = 0; i < 9; ++i)
 	{
 		Vsq[i/3][i%3] = Usqinput[i];
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			Nalpha[i] += Vsq[i][j];
+		}
 	}
 
 	for(int k = 0; k < 3; k++){
@@ -395,7 +404,7 @@ std::vector<double> nonunitflavorregion::evolvefromflavor(std::vector<double> co
 		for(int i = 0; i < 3; i++){
 			double P = 0;
 			for(int j = 0; j < 3; j++)
-				P += Vsq[i][j] * Vsq[k][j];
+				P += Vsq[i][j] * Vsq[k][j] / Nalpha[i] / Nalpha[k];
 			comp_f[k] += P * comp_i[i];
 		}
 	}
