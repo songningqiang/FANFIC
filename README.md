@@ -6,6 +6,10 @@ or simply
 
 make
 
+To compile nonunitary.cc try
+
+make nonunitary
+
 Several inputs in main.cc need to be specified before running the code:
 
 Line 9: mass ordering
