@@ -7,17 +7,21 @@ int main()
 
 	//setup
 	int Max_samp = 1e7; //number of sampling
-	int year = 2020; //can only choose 2020 (current) or 2040 (future)
+	int year = 2040; //can only choose 2020 (current) or 2040 (future)
 
 	bool normalized = true; //if true, will normalize the sum of final flavor compositions to be 1
 	bool randominitialflavor = true; //if true, sample initial flavor/mass composition randomly from flat prior, otherwise, use the intial flavors/masses below
-	std::vector<double> initialflavor {1./3., 2./3., 0.}; //initial flavor composition at the source, must sum up to 1
+	std::vector<double> initialflavor {0., 1., 0.}; //initial flavor composition at the source, must sum up to 1
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2
 
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
 	
 
 	nonunitflavorregion flav(year); //this will initialize the flavor oscillation module
+
+	//print the best-fit of Usq matrix
+	//printmatrix(flav.getUsqbest(), 3, 3);
+
 	std::vector<double> Usqmin, Usqmax;	
 	for (auto x : flav.getUsqdata())
 	{

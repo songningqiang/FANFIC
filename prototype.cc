@@ -1,5 +1,17 @@
 #include "prototype.h"
 
+//print an m * n matrix from a 1d vector
+void printmatrix(std::vector<double> v, int m, int n)
+{
+	for (int i = 0; i < m; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			printf("%1.6lf ", v[i * m + j]);
+		}
+		printf("\n");
+	}
+}
 
 oscillationparams::oscillationparams(const std::string ordering, const double NUFITversion) : ordering(ordering), version(NUFITversion)
 {
@@ -368,6 +380,13 @@ void nonunitflavorregion::fillchi2(const int year)
 			interp1d[i*3+j] = interp_ML;
 
 		}
+	}
+
+	//find the bestfit of each matrix element
+	for (int i = 0; i < Usq.size(); ++i)
+	{
+		int ind = std::min_element(Usq[i].Usqchi2.begin(),Usq[i].Usqchi2.end()) - Usq[i].Usqchi2.begin();
+		Usqbest.push_back(Usq[i].Usqdata[ind]);
 	}
 }
 

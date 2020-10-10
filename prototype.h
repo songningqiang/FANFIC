@@ -29,6 +29,9 @@ ForwardIterator remove_duplicates( ForwardIterator first, ForwardIterator last )
     return new_last;
 }
 
+//print an m * n matrix from a 1d vector
+void printmatrix(std::vector<double> v, int m, int n);
+
 class oscillationparams
 {
 	public:
@@ -89,9 +92,11 @@ class nonunitflavorregion
 		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> Usqinput, bool normalized = false);
 		std::vector<matrixdata> getUsqdata() {return Usq;}
 		//2d array of pointers pointing to the interpolation function of each matrix element and its chi2
+		std::vector<double> getUsqbest() {return Usqbest;}
 		InterpMultilinear<1, double> *interp1d[3*3];		
 	private:
 		std::vector<matrixdata> Usq;
+		std::vector<double> Usqbest;
 		std::vector<double> comp_f {std::vector<double>(3,0.)};	
 	
 };
