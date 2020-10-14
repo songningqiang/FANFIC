@@ -4,6 +4,7 @@
 #include <string>
 #include <algorithm>
 #include <numeric>
+#include <functional>
 
 
 //for linear interpolation
@@ -156,9 +157,14 @@ class likelihood
 		std::vector<double> gett23sqdata() {return t23sqdata;}
 		std::vector<double> getdcpdata() {return dcpdata;}
 		std::vector<double> getchi2data() {return chi2data;}
+		double gett23sqdatamin() {return t23sqdatamin;}
+		double gett23sqdatamax() {return t23sqdatamax;}
+		double getdcpdatamin() {return dcpdatamin;}
+		double getdcpdatamax() {return dcpdatamax;}
 		std::string getchi2file() {return schi2file;}	
 	private:
 		std::vector<double> t23sqdata, dcpdata, chi2data;
+		double t23sqdatamin = 0., t23sqdatamax = 0., dcpdatamin = 0., dcpdatamax = 0.;
 		std::string schi2file = "";
 		oscillationparams osc;
 		InterpMultilinear<2, double> *interp2d;		

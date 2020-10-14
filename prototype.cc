@@ -576,14 +576,52 @@ void likelihood::oscexperiments(experimentlist explist, oscillationparams &osc)
 		explist[i]->setosc(osc);
 		if (explist[i]->getchi2file() != "")
 		{
-			t23sqdata = explist[i]->gett23sqdata();
-			dcpdata = explist[i]->getdcpdata();
-			chi2data = explist[i]->getchi2data();
-			schi2file = explist[i]->getchi2file();
+			//if not the first chi2 map
+			if ((t23sqdatamin != 0.) || (t23sqdatamax != 0.) || (dcpdatamin != 0.) || (dcpdatamax != 0.))
+			{
+				std::vector<double> v = explist[i]->gett23sqdata();
+				double t23min = *std::min_element(v.begin(), v.end());
+				double t23max = *std::max_element(v.begin(), v.end());
+				v = explist[i]->getdcpdata();
+				double dcpmin = *std::min_element(v.begin(), v.end());
+				double dcpmax = *std::max_element(v.begin(), v.end());
+				//check if the chi2 maps match, these conditions can be relaxed later
+				if (((t23sqdatamin != t23min) || (t23sqdatamax != t23max) || (dcpdatamin != dcpmin) || (dcpdatamax != dcpmax)) ||
+					((t23sqdata.size() != (explist[i]->gett23sqdata()).size()) || (dcpdata.size() != (explist[i]->getdcpdata()).size())))
+				{
+					std::cout << "The data in chi2 maps provided don't match, exit." << std::endl;
+					exit(1);
+				}
+				else
+				{
+					//sum up chi2 from different maps
+					std::transform (chi2data.begin(), chi2data.end(), (explist[i]->getchi2data()).begin(), chi2data.begin(), std::plus<int>());
+					schi2file += ", " + explist[i]->getchi2file();
+				}
+
+			}
+			//if first chi2 map, fill up everything
+			else
+			{
+				t23sqdata = explist[i]->gett23sqdata();
+				dcpdata = explist[i]->getdcpdata();
+				chi2data = explist[i]->getchi2data();
+				schi2file = explist[i]->getchi2file();				
+				//t23sqdatamin = *std::min_element((explist[i]->gett23sqdata()).begin(), (explist[i]->gett23sqdata()).end());
+				t23sqdatamin = *std::min_element(t23sqdata.begin(), t23sqdata.end());
+				t23sqdatamax = *std::max_element(t23sqdata.begin(), t23sqdata.end());
+				dcpdatamin = *std::min_element(dcpdata.begin(), dcpdata.end());
+				dcpdatamax = *std::max_element(dcpdata.begin(), dcpdata.end());
+			}
+
 		}
 	}
 	if (schi2file != "")
 	{
+		//normalize chi2 again in case the minima of different chi2 maps don't match
+		double minchi2 = *min_element(chi2data.begin(), chi2data.end());
+		for(int i = 0; i < chi2data.size(); i++) chi2data[i] -= minchi2;
+		//initialize the interpolatoin function		
 		std::vector< std::vector<double>::iterator > grid_iter_list;
 		grid_iter_list.push_back(t23sqdata.begin());
 		grid_iter_list.push_back(dcpdata.begin());
