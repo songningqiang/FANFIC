@@ -315,9 +315,9 @@ void oscillationparams::setdcp(double dcpb, double dcpsigmap, double dcpsigmam)
 }
 
 
-nonunitflavorregion::nonunitflavorregion(const int year)
+nonunitflavorregion::nonunitflavorregion(const int year, const std::string oscoption)
 {
-	fillchi2(year);
+	fillchi2(year, oscoption);
 }
 
 void nonunitflavorregion::readchi2(std::string chi2file)
@@ -358,7 +358,7 @@ void nonunitflavorregion::readchi2(std::string chi2file)
 	Usq.push_back(U);
 }
 
-void nonunitflavorregion::fillchi2(const int year)
+void nonunitflavorregion::fillchi2(const int year, const std::string oscoption)
 {
 	std::string syear;
 	if (year == 2020) syear = "Current";
@@ -370,7 +370,9 @@ void nonunitflavorregion::fillchi2(const int year)
 		for (int j = 0; j < 3; ++j)
 		{
 			std::string fname = "data/non-unitarity_Chi2/U";
-			fname += flavor[i]+std::to_string(j+1)+"Sq_"+syear+"_Chi2.dat";
+			if (oscoption == "agnostic") fname += flavor[i]+std::to_string(j+1)+"Sq_"+syear+"_Chi2.dat";
+			else if (oscoption == "submatrix") fname += flavor[i]+std::to_string(j+1)+"Sq_"+syear+"_Submatrix"+"_Chi2.dat";
+			else std::cerr << "Wrong assumption specified" << ", choose submatrix or agnostic." << std::endl;
 			readchi2(fname);
 			std::vector< std::vector<double>::iterator > grid_iter_list;
 			grid_iter_list.push_back(Usq[i*3+j].Usqdata.begin());

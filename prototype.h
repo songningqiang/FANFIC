@@ -85,10 +85,10 @@ class matrixdata
 class nonunitflavorregion
 {
 	public:
-		nonunitflavorregion(const int year = 2020);
+		nonunitflavorregion(const int year = 2020, const std::string oscoption = "submatrix");
 		~nonunitflavorregion(){};
 		void readchi2(std::string chi2file);
-		void fillchi2(const int year);
+		void fillchi2(const int year, const std::string oscoption);
 		double chisq(std::vector<double> Usqinput);
 		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> Usqinput, bool normalized = false);
 		std::vector<matrixdata> getUsqdata() {return Usq;}

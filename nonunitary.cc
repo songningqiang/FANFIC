@@ -6,8 +6,9 @@ int main()
 {
 
 	//setup
-	int Max_samp = 1e7; //number of sampling
+	int Max_samp = 5e7; //number of sampling
 	int year = 2040; //can only choose 2020 (current) or 2040 (future)
+	std::string oscoption = "submatrix"; //non-unitarity scheme, choose submatrix or agnostic, see arXiv:2008.01088 for details
 
 	bool normalized = true; //if true, will normalize the sum of final flavor compositions to be 1
 	bool randominitialflavor = true; //if true, sample initial flavor/mass composition randomly from flat prior, otherwise, use the intial flavors/masses below
@@ -17,7 +18,7 @@ int main()
 	std::cout << "Output will be written in the file " << foutput << ", in the format of alpha_e, alpha_mu, alpha_tau, chi2." << std::endl; 
 	
 
-	nonunitflavorregion flav(year); //this will initialize the flavor oscillation module
+	nonunitflavorregion flav(year, oscoption); //this will initialize the flavor oscillation module
 
 	//print the best-fit of Usq matrix
 	//printmatrix(flav.getUsqbest(), 3, 3);
