@@ -674,6 +674,65 @@ double likelihood::chisqfromdata(std::vector<double> oscinput)
 }		
 
 
+likelihood_ice::likelihood_ice(std::string year)
+{
+	
+	std::string fname = "data/IceCube_Chi2/icecube";
+	if (year == "2020") fname += "_8yr.txt";
+	else if (year == "2028") fname += "_15yr.txt";
+	else if (year == "2040") fname += "+gen2-inice.txt";
+	else  std::cerr << "Wrong year specified, choose in between 2020, 2028 and 2040." << std::endl; 
+	readchi2(fname);
+	//std::cout << fname << std::endl;
+
+	//initialize the interpolatoin function		
+	std::vector< std::vector<double>::iterator > grid_iter_list;
+	grid_iter_list.push_back(fedata.begin());
+	grid_iter_list.push_back(fmudata.begin());
+	array<int,2> grid_sizes;
+	grid_sizes[0] = fedata.size();
+	grid_sizes[1] = fmudata.size();
+	auto interp_ML = new InterpMultilinear<2, double> (grid_iter_list.begin(), grid_sizes.begin(), chi2data.data(), chi2data.data() + chi2data.size());
+	interp2d = interp_ML;	
+
+}
+
+void likelihood_ice::readchi2(std::string chi2file)
+{
+	std::ifstream file(chi2file);
+	if (!file) {
+	    std::cerr << "Unable to open file " << chi2file << ", file not found." << std::endl;
+	    exit(1);   // call system to stop
+	}			
+	std::string line;
+	while(getline(file, line))
+	{
+		//if start with # or empty do nothing
+		if (!(line.rfind("#", 0) == 0) && (line.find_first_not_of(" ") != std::string::npos))
+		{
+			double tmp1, tmp2, tmp3;
+			sscanf(line.c_str(), "%lf %lf %lf", &tmp1, &tmp2, &tmp3);
+			fedata.push_back(tmp1);
+			fmudata.push_back(tmp2);
+			chi2data.push_back(tmp3);
+		}
+	}
+	fedata.erase(remove_duplicates(fedata.begin(), fedata.end()), fedata.end());
+	fmudata.erase(remove_duplicates(fmudata.begin(), fmudata.end()), fmudata.end());
+	//normalize chi2
+	double minchi2 = *min_element(chi2data.begin(), chi2data.end());
+	for(int i = 0; i < chi2data.size(); i++) chi2data[i] -= minchi2;
+}
+
+double likelihood_ice::chisq23ice(std::vector<double> flavinput)
+{
+	double fe = flavinput[0];
+	double fmu = flavinput[1];
+	array<double,2> args = {fe, fmu};
+	return interp2d->interp(args.begin());	
+}
+
+
 /* /////////////////////////////////////////////////////////////////////////////
 
 DATA FROM INDIVIDUAL EXPERIMENTS BELOW

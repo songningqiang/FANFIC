@@ -170,6 +170,25 @@ class likelihood
 		InterpMultilinear<2, double> *interp2d;		
 };
 
+
+class likelihood_ice
+{
+	public:
+		likelihood_ice(std::string year);
+		~likelihood_ice(){};
+
+		void readchi2(std::string chi2file);
+		double chisq23ice(std::vector<double> flavinput);
+		std::vector<double> getfedata() {return fedata;}
+		std::vector<double> getfmudata() {return fmudata;}
+		std::vector<double> getchi2data() {return chi2data;}
+		std::string getchi2file() {return schi2file;}	
+	private:
+		std::vector<double> fedata, fmudata, chi2data;
+		std::string schi2file = "";
+		InterpMultilinear<2, double> *interp2d;		
+};
+
 /* /////////////////////////////////////////////////////////////////////////////
 
 DATA FROM INDIVIDUAL EXPERIMENTS BELOW

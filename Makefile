@@ -6,6 +6,9 @@ OBJECTS = main.o prototype.o
 all: $(OBJECTS)
 	$(CC) $(OBJECTS) -o main
 
+main_icecube: main_icecube.o prototype.o
+	$(CC) main_icecube.o prototype.o -o main_icecube
+
 nonunitary: nonunitary.o prototype.o
 	$(CC) nonunitary.o prototype.o -o nonunitary
 
