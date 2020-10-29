@@ -818,9 +818,19 @@ NUFIT::NUFIT(std::string chi2file) : oscillationexperiment(chi2file)
 void NUFIT::setosc(oscillationparams &osc) {}
 
 
+prior::prior()
+{
+	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	auto rng = new std::mt19937 (seed);
+	auto dis = new std::uniform_real_distribution<double> (0.0, 1.0);
+	generator = rng;
+	distgenerator = dis;
+}
+
 double prior::rand01()
 {
-	return rand() / double(RAND_MAX);
+	return (*distgenerator) (*generator);
+	//return rand() / double(RAND_MAX);
 }
 double prior::flatPrior(double r, double x1, double x2)
 {

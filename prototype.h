@@ -5,6 +5,9 @@
 #include <algorithm>
 #include <numeric>
 #include <functional>
+#include <chrono>
+#include <ctime>
+#include <random>
 
 
 //for linear interpolation
@@ -245,7 +248,12 @@ class NUFIT : public oscillationexperiment
 class prior
 {
 	public:
+		prior();
+		~prior(){};
 		double rand01();
 		double flatPrior(double r, double x1, double x2);
 		double gaussianPrior(double r, double x1, double x2);
+	private:
+		std::mt19937 *generator;
+		std::uniform_real_distribution<double> *distgenerator;
 };
