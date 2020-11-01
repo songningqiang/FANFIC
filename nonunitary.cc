@@ -48,20 +48,14 @@ int main()
 		}
 		//initial flavor composition in the order of \nu_\mu, \nu_e, \nu_\tau
 		std::vector<double> comp_i(3,0.);
-		if (randominitialflavor == true)
-		{
-			//draw random intial flavor composition
-	      	comp_i[0] = oscprior.rand01();
-	      	comp_i[1] = oscprior.flatPrior(oscprior.rand01(),0.,1.-comp_i[0]);
-	      	comp_i[2] = 1.-comp_i[0]-comp_i[1];
-	    }
+		if (randominitialflavor == true) comp_i = oscprior.randomInitialFlavor();
 	    else comp_i = initialflavor;
       	std::vector<double> comp_f(3, 0.);
       	comp_f= flav.evolvefromflavor(comp_i, Usqinput, normalized); //this will compute the flavor composition at the earth from a combination of mass states
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = flav.chisq(Usqinput);
       	//save to file, keep only those within 5sigma for 2 dof
-		if(chi < 30.) 
+		if(chi < 20.) 
             fprintf(fp, "%1.4f %1.4f %1.4f %e\n", comp_f[0], comp_f[1], comp_f[2], chi);
 
 	}

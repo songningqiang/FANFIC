@@ -13,6 +13,9 @@
 //for linear interpolation
 //credit: Ronaldo Carpio
 #include "linterp.h"
+//for Dirichlet random numbers
+//credit: George Cantwell https://github.com/gcant/dirichlet-cpp
+#include "dirichlet.h"
 
 
 //remove duplicated elements
@@ -252,8 +255,10 @@ class prior
 		~prior(){};
 		double rand01();
 		double flatPrior(double r, double x1, double x2);
+		std::vector<double> randomInitialFlavor();
 		double gaussianPrior(double r, double x1, double x2);
 	private:
 		std::mt19937 *generator;
+		dirichlet_distribution<std::mt19937> *distgenerator_diric;
 		std::uniform_real_distribution<double> *distgenerator;
 };

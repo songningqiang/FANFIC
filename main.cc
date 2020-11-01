@@ -171,13 +171,7 @@ int main()
 		std::vector<double> oscp{p_12, p_13, p_23, p_dcp};
 		//initial flavor composition in the order of \nu_\mu, \nu_e, \nu_\tau
 		std::vector<double> comp_i(3,0.);
-		if (randominitialflavor == true)
-		{
-			//draw random intial flavor composition
-	      	comp_i[0] = oscprior.rand01();
-	      	comp_i[1] = oscprior.flatPrior(oscprior.rand01(),0.,1.-comp_i[0]);
-	      	comp_i[2] = 1.-comp_i[0]-comp_i[1];
-	    }
+		if (randominitialflavor == true) comp_i = oscprior.randomInitialFlavor();
 	    else comp_i = initialflavor;
       	std::vector<double> comp_f(3, 0.);
       	if (neutrinodecay==false) comp_f= flav.evolvefromflavor(comp_i, oscp); //this will compute the flavor composition at the earth
@@ -187,7 +181,7 @@ int main()
       	if (oscchi2.getchi2file() != "") chi = oscchi2.chisqfromdata(oscp);
       	else chi = oscchi2.chisq(oscp);
       	//save to file, keep only those within 5sigma for 2 dof
-		if(chi < 30.) 
+		if(chi < 20.) 
             fprintf(fp, "%1.4f %1.4f %1.4f %e\n", comp_f[0], comp_f[1], comp_f[2], chi);
 
 	}

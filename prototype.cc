@@ -820,11 +820,21 @@ void NUFIT::setosc(oscillationparams &osc) {}
 
 prior::prior()
 {
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	auto rng = new std::mt19937 (seed);
+	//unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+	//auto rng = new std::mt19937 (seed);
 	auto dis = new std::uniform_real_distribution<double> (0.0, 1.0);
+    // initialize rng
+    std::random_device rd;
+    auto rng = new std::mt19937 (rd());	
+	auto dis_diric = new dirichlet_distribution<std::mt19937> ({1, 1, 1});
 	generator = rng;
 	distgenerator = dis;
+	distgenerator_diric = dis_diric;
+}
+
+std::vector<double> prior::randomInitialFlavor()
+{
+	return (*distgenerator_diric) (*generator);
 }
 
 double prior::rand01()
