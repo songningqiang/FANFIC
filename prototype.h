@@ -125,9 +125,14 @@ class flavorregion
 		double V32s(double q12, double q13, double q23, double dcp);
 		double V33s(double q13, double q23);
 		std::vector<double> evolvefromflavor(std::vector<double> comp_i, std::vector<double> oscinput);
+		std::vector<double> evolvebackfromflavor(std::vector<double> comp_f, std::vector<double> oscinput);
 		std::vector<double> evolvefrommass(std::vector<double> comp_i, std::vector<double> oscinput);
+		double *cholesky(double *A, int n);
+		double *lowermatrixinversion(double *A, int n);
+		double *symmetricmatrixinversion(double *A, int n);
+		void show_matrix(double *A, int n);
 	private:
-		std::vector<double> comp_f {std::vector<double>(3,0.)};	
+		//std::vector<double> comp_f {std::vector<double>(3,0.)};	
 };
 
 

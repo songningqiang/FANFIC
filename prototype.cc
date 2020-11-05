@@ -439,7 +439,8 @@ std::vector<double> nonunitflavorregion::evolvefromflavor(std::vector<double> co
 }
 
 
-flavorregion::flavorregion() : comp_f(3, 0.){}
+//flavorregion::flavorregion() : comp_f(3, 0.){}
+flavorregion::flavorregion() {}
 double flavorregion::sq(double x)
 {
 	return x*x;
@@ -482,6 +483,7 @@ double flavorregion::V33s(double q13, double q23)
 }
 std::vector<double> flavorregion::evolvefromflavor(std::vector<double> comp_i, std::vector<double> oscinput)
 {
+	std::vector<double> comp_f {std::vector<double>(3,0.)};
 	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
 	double q12=asin(sqrt(oscinput[0]));
 	double q13=asin(sqrt(oscinput[1]));
@@ -509,9 +511,41 @@ std::vector<double> flavorregion::evolvefromflavor(std::vector<double> comp_i, s
 	return comp_f;
 }
 
+std::vector<double> flavorregion::evolvebackfromflavor(std::vector<double> comp_f, std::vector<double> oscinput)
+{
+	std::vector<double> comp_i {std::vector<double>(3,0.)};
+	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
+	double q12=asin(sqrt(oscinput[0]));
+	double q13=asin(sqrt(oscinput[1]));
+	double q23=asin(sqrt(oscinput[2]));
+	double dcp=oscinput[3]/180.*M_PI;
+	Vsq[0][0] = V11s(q12, q13);
+	Vsq[0][1] = V12s(q12, q13);
+	Vsq[0][2] = V13s(q13);
+	Vsq[1][0] = V21s(q12, q13, q23, dcp);
+	Vsq[1][1] = V22s(q12, q13, q23, dcp);
+	Vsq[1][2] = V23s(q13, q23);
+	Vsq[2][0] = V31s(q12, q13, q23, dcp);
+	Vsq[2][1] = V32s(q12, q13, q23, dcp);
+	Vsq[2][2] = V33s(q13, q23);
+	//calculate probability matrix
+	double P[9] = {0., 0., 0., 0., 0., 0., 0., 0., 0.};
+	for (int i = 0; i < 3; ++i)
+		for (int j = 0; j < 3; ++j)
+			for (int k = 0; k < 3; ++k)
+				P[i*3+j] += Vsq[j][k] * Vsq[i][k];
+	//calculate P^-1
+	double *Pinv = symmetricmatrixinversion(P, 3);
+	for	(int i = 0; i < 3; ++i) 
+		for (int j = 0; j < 3; ++j)
+			comp_i[i] += Pinv[i*3+j] * comp_f[j];
+	return comp_i;
+}
+
 
 std::vector<double> flavorregion::evolvefrommass(std::vector<double> comp_i, std::vector<double> oscinput)
 {
+	std::vector<double> comp_f {std::vector<double>(3,0.)};
 	std:vector<std::vector<double>> Vsq(3, std::vector<double>(3, 0.));
 	double q12=asin(sqrt(oscinput[0]));
 	double q13=asin(sqrt(oscinput[1]));
@@ -534,6 +568,64 @@ std::vector<double> flavorregion::evolvefrommass(std::vector<double> comp_i, std
 		}
 	}
 	return comp_f;
+}
+
+//Cholesky decomposition, return the lower triangle matrix
+double* flavorregion::cholesky(double *A, int n) {
+    double *L = (double*)calloc(n * n, sizeof(double));
+    if (L == NULL)
+        exit(EXIT_FAILURE);
+ 
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < (i+1); j++) {
+            double s = 0;
+            for (int k = 0; k < j; k++)
+                s += L[i * n + k] * L[j * n + k];
+            L[i * n + j] = (i == j) ?
+                           sqrt(A[i * n + i] - s) :
+                           (1.0 / L[j * n + j] * (A[i * n + j] - s));
+        }
+ 
+    return L;
+}
+ 
+
+//inversion of lower triangular matrix and return the full inversed matrix
+double* flavorregion::lowermatrixinversion(double *A, int n) {
+    double *L = (double*)calloc(n * n, sizeof(double));
+    double *Lout = (double*)calloc(n * n, sizeof(double));
+    if (L == NULL)
+        exit(EXIT_FAILURE);
+    for (int i = 0; i < n; i++) {
+        L[i * n + i] = 1. / A[i * n + i];
+        for (int j = 0; j < i; j++) {
+            double s = 0.;
+            for (int k = j; k < i; k++)
+                s += A[i * n + k] * L[k * n + j];
+            L[i * n + j] = - s * L[i * n + i];
+        }
+    }
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            for (int k = 0; k < n; k++)
+                Lout[i * n + j] += L[k * n + i] * L[k * n + j];
+    return Lout;
+}
+
+
+//inversion of a symmetric matrix
+double* flavorregion::symmetricmatrixinversion(double *A, int n) {
+	double *L = cholesky(A, n);
+	double *Lout = lowermatrixinversion(L, n);
+	return Lout;
+}
+
+void flavorregion::show_matrix(double *A, int n) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++)
+            printf("%2.5f ", A[i * n + j]);
+        printf("\n");
+    }
 }
 
 
