@@ -766,26 +766,29 @@ double likelihood::chisqfromdata(std::vector<double> oscinput)
 }		
 
 
-likelihood_ice::likelihood_ice(std::string year)
+likelihood_ice::likelihood_ice(std::string year) : year(year)
 {
 	
-	std::string fname = "data/IceCube_Chi2/icecube";
-	if (year == "2020") fname += "_8yr.txt";
-	else if (year == "2028") fname += "_15yr.txt";
-	else if (year == "2040") fname += "+gen2-inice.txt";
-	else  std::cerr << "Wrong year specified, choose in between 2020, 2028 and 2040." << std::endl; 
-	readchi2(fname);
-	//std::cout << fname << std::endl;
+	if (year != "2015")
+	{
+		std::string fname = "data/IceCube_Chi2/icecube";
+		if (year == "2020") fname += "_8yr.txt";
+		else if (year == "2028") fname += "_15yr.txt";
+		else if (year == "2040") fname += "+gen2-inice.txt";
+		else  std::cerr << "Wrong year specified, choose in between 2015, 2020, 2028 and 2040." << std::endl; 
+		readchi2(fname);
+		//std::cout << fname << std::endl;
 
-	//initialize the interpolatoin function		
-	std::vector< std::vector<double>::iterator > grid_iter_list;
-	grid_iter_list.push_back(fedata.begin());
-	grid_iter_list.push_back(fmudata.begin());
-	array<int,2> grid_sizes;
-	grid_sizes[0] = fedata.size();
-	grid_sizes[1] = fmudata.size();
-	auto interp_ML = new InterpMultilinear<2, double> (grid_iter_list.begin(), grid_sizes.begin(), chi2data.data(), chi2data.data() + chi2data.size());
-	interp2d = interp_ML;	
+		//initialize the interpolatoin function		
+		std::vector< std::vector<double>::iterator > grid_iter_list;
+		grid_iter_list.push_back(fedata.begin());
+		grid_iter_list.push_back(fmudata.begin());
+		array<int,2> grid_sizes;
+		grid_sizes[0] = fedata.size();
+		grid_sizes[1] = fmudata.size();
+		auto interp_ML = new InterpMultilinear<2, double> (grid_iter_list.begin(), grid_sizes.begin(), chi2data.data(), chi2data.data() + chi2data.size());
+		interp2d = interp_ML;
+	}	
 
 }
 
@@ -816,12 +819,40 @@ void likelihood_ice::readchi2(std::string chi2file)
 	for(int i = 0; i < chi2data.size(); i++) chi2data[i] -= minchi2;
 }
 
-double likelihood_ice::chisq23ice(std::vector<double> flavinput)
+double likelihood_ice::chisqice(std::vector<double> flavinput)
 {
-	double fe = flavinput[0];
-	double fmu = flavinput[1];
-	array<double,2> args = {fe, fmu};
-	return interp2d->interp(args.begin());	
+	if (year == "2015") return chisqice_2015(flavinput);
+	else
+	{
+		double fe = flavinput[0];
+		double fmu = flavinput[1];
+		array<double,2> args = {fe, fmu};
+		return interp2d->interp(args.begin());		
+	}	
+}
+
+double likelihood_ice::chisqice_2015(std::vector<double> flavinput)
+{
+	double f_eE = flavinput[0];
+	double f_mE = flavinput[1];
+
+	double f_eE_bf = 0.50;
+	double f_mE_bf = 0.50;
+	double sigma_f_eE = 0.970;
+	double sigma_f_mE = 0.365;
+	double correlation = -0.60;
+	double norm = 39.4056;
+    double f1 = 1./(2.0*M_PI*sigma_f_eE*sigma_f_mE*sqrt(1.0-correlation*correlation));
+    double f2 = 0.5/(1.0-correlation*correlation);
+    double f3 = pow(f_eE-f_eE_bf, 2.0) / (sigma_f_eE*sigma_f_eE);
+    double f4 = pow(f_mE-f_mE_bf, 2.0) / (sigma_f_mE*sigma_f_mE);
+    double f5 = 2.0*correlation*(f_eE-f_eE_bf)*(f_mE-f_mE_bf)/sigma_f_eE/sigma_f_mE;
+
+    // offset is the 2D Gaussian evaluated at the best-fit point
+    double offset = f1;
+
+    return norm*(offset-f1*exp(-f2*(f3+f4+f5)));
+
 }
 
 

@@ -9,10 +9,10 @@ int main()
 {
 
 	//setup
-	int Max_samp = 1e7; //number of sampling
+	int Max_samp = 5e7; //number of sampling
 	double nufitversion = 5.0; //choose nufit version from {1.0,1.1,1.2,1.3,2.0,2.1,2.2,3.0,3.1,3.2,4.0,4.1,5.0}
-	std::string	year = "2020"; //IceCube year, choose 2020 (NUFIT), 2028 (NUFIT+JUNO) or 2040 (JUNO+DUNE+HK)
-	std::string ordering = "NO"; //normal ordering or inverted ordering
+	std::string	year = "2015"; //IceCube year, choose 2015 (NUFIT), 2020 (NUFIT), 2028 (NUFIT+JUNO) or 2040 (JUNO+DUNE+HK)
+	std::string ordering = "IO"; //normal ordering or inverted ordering
 	std::string t23oct = "upper"; //choose t23 octant from upper, lower and max, this only affects DUNE and HyperK	
 	//list of experiments to use, if there are more than 1 exp with t23-dcp chi2 table, the sum of chi2 will be used
 	//in that case, make sure the chi2 tables match each other, otherwise an error will be raised
@@ -32,7 +32,7 @@ int main()
 	//For IO, choose between 0, 1 and 1.5, 1.5 corresponds to the Nufit5.0 bestfit of 1.5pi
 	double dcpbest = 1.;
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
-	//std::string foutput = "output_testsource/output_2020_NO.txt";
+	//std::string foutput = "output_testsource/output_NUFIT5.0_IO_IceCube2015.txt";
 
 
 
@@ -168,28 +168,25 @@ int main()
 		}
 		
 
-		p_12 = 0.304; p_13 = 0.02219; p_23 = 0.573; p_dcp = 197.;
+		//p_12 = 0.304; p_13 = 0.02219; p_23 = 0.573; p_dcp = 197.;
 		//p_12 = 0.307; p_13 = 0.02206; p_23 = 0.538; p_dcp = 234.;
 		//oscillation parameters in the order of \sin^2\theta_{12}, \sin^2\theta_{13}, \sin^2\theta_{23}, dcp
 		//dcp is in the unit of degrees						
 		std::vector<double> oscp{p_12, p_13, p_23, p_dcp};
 		//initial flavor composition in the order of \nu_\mu, \nu_e, \nu_\tau
 		std::vector<double> comp_i(3,0.);
-      	//comp_i[0] = oscprior.rand01();
-      	comp_i[0] = 1./3.;
+      	comp_i[0] = oscprior.rand01();
       	comp_i[1] = 1.-comp_i[0];
       	comp_i[2] = 0.;
 
       	std::vector<double> comp_f(3, 0.);
       	comp_f= flav.evolvefromflavor(comp_i, oscp); //this will compute the flavor composition at the earth
-      	for (double x: comp_f) std::cout << x << " ";
-      	std::cout << std::endl;
-      	exit(1);
+      	
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = 0.;
       	if (oscchi2.getchi2file() != "") chi = oscchi2.chisqfromdata(oscp);
       	else chi = oscchi2.chisq(oscp);
-      	chi += icechi2.chisq23ice(comp_f);
+      	chi += icechi2.chisqice(comp_f);
       	//save to file, keep only those within 5sigma for 2 dof
 		if(chi < 30.) 
             fprintf(fp, "%1.6f %1.4f %1.4f %1.4f %e\n", comp_i[0], comp_f[0], comp_f[1], comp_f[2], chi);
