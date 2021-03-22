@@ -66,7 +66,7 @@ Other codes can also be compiled in a similar way by referring to the Makefile.
 
 **nonunitflavorregion**: set the oscillation matrix in case it is non-unitary and evolve neutrino flavors from the source to Earth. The corresponding \chi^2 should be given in files.
 
-**neutrino decay**: evolve neutrino flavors from the source to Earth assuming neutrino decay.
+**neutrinodecay**: evolve neutrino flavors from the source to Earth assuming neutrino decay.
 
 **prior**: set the prior of parameters. prior.randomInitialFlavor() return a random flavor composition which sums up to 1. This is equivalent to a symmetric Dirichlet distribution on a 3-simplex, with concentration parameters a = 1. prior.random2d() returns 2d symmetric Dirichlet-distributed numbers. prior.flatPrior returns uniformly distributed numbers.
 
