@@ -1,6 +1,10 @@
 # FlavorRegion: A Monte Carlo Code to Find the Composition of Astrophysical Neutrinos
 
-Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos A. Arg{\"u}elles
+Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos A. Arguelles
+
+Reference: arXiv: 2012.12893
+
+## Getting started
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
