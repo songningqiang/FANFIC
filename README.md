@@ -1,6 +1,6 @@
 # FlavorRegion: A Monte Carlo Code to Find the Composition of Astrophysical Neutrinos
 
-Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos A. Arguelles
+Authors: Ningqiang Song, Shirley Li, Carlos A. Arguelles, Mauricio Bustamante, Aaron Vincent
 
 Neutrino oscillation data is provided by Shirley Li, and flavor composition data is provided by Mauricio Bustamante.
 
