@@ -60,23 +60,28 @@ The main code is main.cc which outputs four columns in the output file: alpha_e,
 
 **NUFIT**: set \sin^2\theta_{23} and \delta_{CP} with NUFIT, this is to include their correlations.
 
-**nonunitflavorregion**: set the oscillation matrix in case it is non-unitary. The corresponding \chi^2 should be given in files.
+**flavorregion**: evolve neutrino flavors from the source to Earth.
 
-**flavorregion**: evolve the neutrino flavor from the source to Earth.
+**nonunitflavorregion**: set the oscillation matrix in case it is non-unitary and evolve neutrino flavors from the source to Earth. The corresponding \chi^2 should be given in files.
 
-**
+**neutrino decay**: evolve neutrino flavors from the source to Earth assuming neutrino decay.
+
+**prior**: set the prior of parameters. prior.randomInitialFlavor() return a random flavor composition which sums up to 1. This is equivalent to a symmetric Dirichlet distribution on a 3-simplex, with concentration parameters a = 1. prior.random2d() returns 2d symmetric Dirichlet-distributed numbers. prior.flatPrior returns uniformly distributed numbers.
+
+**gaussianprior**: set gaussian prior.
+
+**likelihood**: find the \chi^2 for oscillation parameters. Oscillation experiments must be specified before using this class.
+
+**likelihood_ice**: find the \chi^2 for Earth flavor compositions.
 
 
+## Results:
 
-Additional experiments can be added as the derived class of oscillationexperiment by overwriting the virtual function setosc. Inside this function, the standard deviation is supposed to be set to the smallest number expected. In this way, the order of the experiments won't matter. However, if several experiments are specified each with a different t23-dcp chi2 file, only the last chi2 file will be used. HyperK has not been implemented very properly but it can still be used now to account for the chi2 file from HyperK.
+Plots of the previous runs can be found in the "results" folder. plot_arrays.pdf summarizes part of the results, and more figures can be found in the "figures" folder.
 
-flavorregion is a class to calculate the final flavor composition at the earth. This is done with the member function evolveflavor. New physics in neutrino propagation can be introduced by overwriting this class.
+## Using the code:
 
-likelihood is a class to calculate the total chi2. If no chi2 file served, the member function chisq will be called assuming gaussian. If served, chisqfromdata will be called instead.
-
-prior is a class to randomly generate initial flavor composition and oscillation parameters. If necessary, priors other than flat can be implemented later.
-
-More comments can be found in the code.
-
+Feel free to use, modify or distribute the code. If you use the code in your publication, please cite the paper 
+[https://arxiv.org/pdf/2012.12893.pdf](https://arxiv.org/pdf/2012.12893.pdf).
 
 
