@@ -32,29 +32,21 @@ and
 ./nonunitarity
 ```
 
+**infersourcecomposition.cc**: infer the posterior of f_e in the source flavor composition (f_e:1-f_e:0) with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes
+
+**infersourcefraction.cc**: infer the posterior of the fraction of different production meachanisms in the source (k_\pi, k_\mu, k_n) (pion decay, damped muon, neutrond decay) with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+
+**infersourcefraction_kpikmu.cc**: infer the posterior of the fraction of different production meachanisms in the source (k_\pi, k_\mu, 0) (pion decay, damped muon, neutrond decay, k_\pi+k_\mu=1), with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+
+**neutrinodecay.cc**: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming certain source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+
+**neutrinodecay_masseigenstates.cc**: find the flavor compositions at Earth from certain mass eigenstates at Earth because of neutrino decay f_{\alpha,\oplus} = \sum_i |U_{\alpha i}|^2*f_i.
+
+**neutrinodecay_kpigaussian.cc: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming gaussian source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
-g++ main.cc prototype.cc -o main
-
-or simply
-
-make
-
-To compile nonunitary.cc try
-
-make nonunitary
-
-Several inputs in main.cc need to be specified before running the code:
-
-Line 9: mass ordering
-
-Line 11: the octant of theta_23, this only makes a difference if DUNE or HYPERK is used
-
-Line 18: list of experiments to be used, instructions can be found in the comments above
-
-Line 19: output file name
-
-prototype.h is the header file containing class declaration, and prototype.cc include the definition of functions.
+## Main modules in prototype.cc:
 
 oscillationparams is a class containing all oscillation parameters and their uncertainties. sigmaplus is the standard deviation above the best-fit, and sigmaminus is the value below. By default, normal ordering is assumed but inverted ordering can also be specified explicitly. Nufit 5.0 with SK included is set as default.
 
