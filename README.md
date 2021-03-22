@@ -42,13 +42,31 @@ and
 
 **neutrinodecay_masseigenstates.cc**: find the flavor compositions at Earth from certain mass eigenstates at Earth because of neutrino decay f_{\alpha,\oplus} = \sum_i |U_{\alpha i}|^2*f_i.
 
-**neutrinodecay_kpigaussian.cc: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming gaussian source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+**neutrinodecay_kpigaussian.cc**: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming gaussian source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
-## Main modules in prototype.cc:
+## Main classes:
 
-oscillationparams is a class containing all oscillation parameters and their uncertainties. sigmaplus is the standard deviation above the best-fit, and sigmaminus is the value below. By default, normal ordering is assumed but inverted ordering can also be specified explicitly. Nufit 5.0 with SK included is set as default.
+**oscillationparams**:  set oscillation parameters and their uncertainties. sigmaplus is the standard deviation above the best-fit, and sigmaminus is the value below.
+
+**oscillationexperiment**: base class to set neutrino oscillation parameters from neutrino oscillation experiment.
+
+**JUNO**: set oscillation parameters with JUNO experiment.
+
+**DUNE**: set oscillation parameters with DUNE experiment.
+
+**HYPERK**: set oscillation parameters with HYPERK experiment.
+
+**NUFIT**: set \sin^2\theta_{23} and \delta_{CP} with NUFIT, this is to include their correlations.
+
+**nonunitflavorregion**: set the oscillation matrix in case it is non-unitary. The corresponding \chi^2 should be given in files.
+
+**flavorregion**: evolve the neutrino flavor from the source to Earth.
+
+**
+
+
 
 Additional experiments can be added as the derived class of oscillationexperiment by overwriting the virtual function setosc. Inside this function, the standard deviation is supposed to be set to the smallest number expected. In this way, the order of the experiments won't matter. However, if several experiments are specified each with a different t23-dcp chi2 file, only the last chi2 file will be used. HyperK has not been implemented very properly but it can still be used now to account for the chi2 file from HyperK.
 

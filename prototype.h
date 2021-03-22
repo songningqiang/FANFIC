@@ -306,7 +306,7 @@ class prior
 		double flatPrior(double r, double x1, double x2);
 		std::vector<double> randomInitialFlavor();
 		std::vector<double> random2d();
-		double gaussianPrior(double r, double x1, double x2);
+		//double gaussianPrior(double r, double x1, double x2);
 	private:
 		std::mt19937 *generator;
 		dirichlet_distribution<std::mt19937> *distgenerator_diric;
