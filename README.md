@@ -2,6 +2,8 @@
 
 Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos A. Arguelles
 
+Neutrino oscillation data is provided by Shirley Li, and flavor composition data is provided by Mauricio Bustamante.
+
 Reference: arXiv: [2012.12893](https://arxiv.org/pdf/2012.12893.pdf)
 
 ## Introduction and getting started
