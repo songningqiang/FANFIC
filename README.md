@@ -8,9 +8,17 @@ Reference: arXiv: 2012.12893
 
 This is a Monte Carlo code to find the flavor composition of astrophysical neutrinos at Earth from the flavor composition at the source with neutrino oscillations and new physics. The oscillation parameters are constrained by the combined analysis of NuFIT or future neutrino oscillation experiments, including JUNO, DUNE and HyperK. The Earth flavor compositions can be constrained by current IceCube data or future neutrino telescopes, including IceCube-Gen2, P-ONE, KM3NeT and TAMBO. We also consider beyond Standard Model scenarios, including non-unitarity neutrino mixing and neutrino invisible decay. Some example codes are given below.
 
-main.cc: find the flavor compositions at Earth from certain source flavor compositions assuming the oscillation parameters constrained by NuFIT or future oscillation experiments. To compile, simply 
+main.cc: find the flavor compositions at Earth from certain source flavor compositions assuming the oscillation parameters constrained by NuFIT or future oscillation experiments. To compile and run it, simply 
 ```
 make
+```
+and
+```
+./main
+```
+Prior to run, please specify the number of samples, NuFIT version, the oscillation experiments to use (can be empty), the mass ordering, the value of \delta_{CP} and the octant of \theta_{23}, the initial flavor composition and the name of the output file. See the comments in the code for details. To enable parallelization with openmp, simply uncomment the line
+```
+#pragma omp parallel for 
 ```
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
