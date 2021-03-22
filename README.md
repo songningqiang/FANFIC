@@ -4,7 +4,7 @@ Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos 
 
 Reference: arXiv: 2012.12893
 
-## Getting started
+## Introduction and getting started
 
 This is a Monte Carlo code to find the flavor composition of astrophysical neutrinos at Earth from the flavor composition at the source with neutrino oscillations and new physics. The oscillation parameters are constrained by the combined analysis of NuFIT or future neutrino oscillation experiments, including JUNO, DUNE and HyperK. The Earth flavor compositions can be constrained by current IceCube data or future neutrino telescopes, including IceCube-Gen2, P-ONE, KM3NeT and TAMBO. We also consider beyond Standard Model scenarios, including non-unitarity neutrino mixing and neutrino invisible decay. Some example codes are given below.
 
@@ -16,10 +16,12 @@ and
 ```
 ./main
 ```
-Prior to run, please specify the number of samples, NuFIT version, the oscillation experiments to use (can be empty), the mass ordering, the value of \delta_{CP} and the octant of \theta_{23}, the initial flavor composition and the name of the output file. See the comments in the code for details. To enable parallelization with openmp, simply uncomment the line
+Prior to run, please specify the number of samples, NuFIT version, the oscillation experiments to use (can be empty), the mass ordering, the value of \delta_{CP} and the octant of \theta_{23}, the initial flavor composition and the name of the output file. See the comments in the code for details. To enable parallelization with openmp, please uncomment the line
 ```
 #pragma omp parallel for 
 ```
+The code will draw samples according to the priors on source flavor compositions and neutrino oscillation parameters., and then calculate the Earth flavor composition and the correpsonding $\chi^2$. The output file is in the format 
+f_{e,\oplus}, f_{\mu,\oplus}, f_{\tau,\oplus}, \chi^2.
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
