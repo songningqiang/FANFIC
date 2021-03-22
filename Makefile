@@ -1,21 +1,39 @@
-CC = g++
-C_FLAGS = -g
+CC = g++-10
+C_FLAGS = -g -I/usr/local/Cellar/boost/1.74.0/include -std=c++11 -fopenmp
 
 OBJECTS = main.o prototype.o
 
 all: $(OBJECTS)
-	$(CC) $(OBJECTS) -o main
+	$(CC) $(C_FLAGS) $(OBJECTS) -o main
 
-main_icecube: main_icecube.o prototype.o
-	$(CC) main_icecube.o prototype.o -o main_icecube
+nonunitarity: nonunitarity.o prototype.o
+	$(CC) nonunitarity.o prototype.o -o nonunitarity
 
-nonunitary: nonunitary.o prototype.o
-	$(CC) nonunitary.o prototype.o -o nonunitary
+infersourcecomposition: infersourcecomposition.o prototype.o
+	$(CC) infersourcecomposition.o prototype.o -o infersourcecomposition
 
-%.o: %.cc %.h Makefile
+infersourcefraction: infersourcefraction.o prototype.o
+	$(CC) infersourcefraction.o prototype.o -o infersourcefraction
+
+infersourcefraction_kpikmu: infersourcefraction_kpikmu.o prototype.o
+	$(CC) infersourcefraction_kpikmu.o prototype.o -o infersourcefraction_kpikmu
+
+neutrinodecay: neutrinodecay.o prototype.o
+	$(CC) $(C_FLAGS) neutrinodecay.o prototype.o -o neutrinodecay
+
+neutrinodecay_masseigenstates: neutrinodecay_masseigenstates.o prototype.o
+	$(CC) $(C_FLAGS) neutrinodecay_masseigenstates.o prototype.o -o neutrinodecay_masseigenstates
+
+neutrinodecay_kpigaussian: neutrinodecay_kpigaussian.o prototype.o
+	$(CC) $(C_FLAGS) neutrinodecay_kpigaussian.o prototype.o -o neutrinodecay_kpigaussian
+
+
+%.o: %.cc prototype.h Makefile
 	$(CC) $(C_FLAGS) -c $< -o $*.o
 
 clean:
-	-rm main nonunitary
 	-rm *.o 
+	-rm main nonunitarity infersourcecomposition infersourcefraction infersourcefraction_kpikmu \
+	neutrinodecay neutrinodecay_masseigenstates  neutrinodecay_kpigaussian
+	
 

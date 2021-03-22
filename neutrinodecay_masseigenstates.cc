@@ -1,8 +1,7 @@
 /***********************************************************************************************************/
-//This is a Monte Carlo code to find the flavor compositions at Earth from certain source flavor compositions
+//This is a Monte Carlo code to find the flavor compositions at Earth from certain mass eigenstates at Earth
+//because of neutrino decay f_{\alpha,\oplus} = \sum_i |U_{\alpha i}|^2*f_i
 //assuming the oscillation parameters constrained by NuFIT or future oscillation experiments
-//f_{\beta,\oplus} = \sum_{i,\alpha} |U_{\alpha i}|^2*|U_{\beta i}|^2*f_{\alpha,S}
-//Ref: https://arxiv.org/pdf/2012.12893.pdf
 //Mar 19, 2021, Ningqiang Song
 /***********************************************************************************************************/
 
@@ -42,14 +41,15 @@ int main()
 		else if (ordering == "IO") dcpbest = 1.5;
 		else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
 	}
-	bool randominitialflavor = true; //if true, sample initial flavor compositions randomly from flat prior, otherwise, use the intial flavors below
-	std::vector<double> initialflavor {1., 0., 0.}; //initial flavor composition at the source, must sum up to 1
+	bool randominitialmass = true; //if true, sample initial mass composition randomly from flat prior, otherwise, use the intial mass state below
+	std::vector<double> initialmass {1., 0., 0.}; //initial mass composition at the source, must sum up to 1
 	std::string foutput = "test.txt"; //name of output file to save flavor compositions and chi2	
 
 
 
 	oscillationparams osc(ordering, nufitversion); //this will initialize the oscillation parameters with NUFIT 5.0 table with superK by default
 	std::cout << "Using Nufit version " << osc.getversion() << std::endl;
+	std::cout << "Neutrino decay is assumed." << std::endl;
 	std::cout << Max_samp << " samples will be generated, with " << ordering << " ordering and " << t23oct << " octant." << std::endl;
 	if (customizedcp == true) std::cout << "Use customized delta_CP = " << dcpbest << "*pi." << std::endl;
 	else std::cout << "Use delta_CP from the bestfit of Nufit" << osc.getversion() << "." << std::endl;
@@ -119,12 +119,12 @@ int main()
 		//oscillation parameters in the order of \sin^2\theta_{12}, \sin^2\theta_{13}, \sin^2\theta_{23}, dcp
 		//dcp is in the unit of degrees						
 		std::vector<double> oscp{p_12, p_13, p_23, p_dcp};
-		//initial flavor composition in the order of \nu_\mu, \nu_e, \nu_\tau
+		//initial mass composition in the order of \nu_1, \nu_2, \nu_3
 		std::vector<double> comp_i(3,0.);
-		if (randominitialflavor == true) comp_i = oscprior.randomInitialFlavor();
-	    else comp_i = initialflavor;
+		if (randominitialmass == true) comp_i = oscprior.randomInitialFlavor();
+	    else comp_i = initialmass;
       	std::vector<double> comp_f(3, 0.);
-      	comp_f= flav.evolvefromflavor(comp_i, oscp); //this will compute the flavor composition at the earth
+      	comp_f= flav.evolvefrommass(comp_i, oscp); //this will compute the flavor composition at the earth from a combination of mass states
       	//use t23-dcp chi2 to calculate the total chi2
       	double chi = 0.;
       	if (oscchi2.getchi2file() != "") chi = oscchi2.chisqfromdata(oscp);

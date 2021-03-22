@@ -9,6 +9,11 @@
 #include <ctime>
 #include <random>
 
+//special functions, needed for neutrino decay
+#include <boost/math/special_functions/gamma.hpp>
+#include <boost/math/quadrature/trapezoidal.hpp>
+#include <boost/random.hpp>
+
 
 //for linear interpolation
 //credit: Ronaldo Carpio
@@ -112,7 +117,7 @@ class nonunitflavorregion
 class flavorregion
 {
 	public:
-		flavorregion();
+		flavorregion(){};
 		~flavorregion(){};
 		double sq(double x);
 		double V11s(double q12, double q13);
@@ -202,6 +207,41 @@ class likelihood_ice
 		InterpMultilinear<2, double> *interp2d;		
 };
 
+class neutrinodecay : public flavorregion
+{
+public:
+	neutrinodecay():flavorregion(){};
+	~neutrinodecay(){};
+	double rho(double z);
+	double h(double z);
+	double Z2(double z);
+	void calcmatrix(std::vector<double> oscinput);
+	double Delta(double kappa, double EnuTeV, double z);
+	double D(double kappa, double EnuTeV, double z);
+	void cbeta(std::vector<double> comp_i, std::vector<std::vector<double>> &cmatrix);
+	double Eint(double c1, double c2, double c3, double Delta2, double Delta3, double EnuTeV, double z);
+	double trapz(std::function<double(double)> func, double start, double end, int Nbins);
+	void flavorcomp(double kappa2, double kappa3, std::vector<double> comp_i, std::vector<double> oscinput, std::vector<double> &comp_f);
+private:
+	//parameters for neutrino decay
+	const double a = 1.665, b = 1 - a, c = 1.425;
+	const double LH = 4.4532; //Gpc
+	const double prefactor = 1.02867e5; //for unit conversion
+	//parameters for AGN profile
+	const double zmax = 4., zc = 1.5, m = 1.5;
+	const double Omegam = 0.3158, OmegaL = 1-Omegam; 
+	//parameters for neutrino flux
+	//const double gamma = 2.87;
+	const double gamma = 2.50;
+	const double Enumin = 60.; //in TeV
+	const double Enumax = 1.e4;
+	//for mixing matrix
+	std::vector<std::vector<double>> Vsq;
+
+
+	
+};
+
 /* /////////////////////////////////////////////////////////////////////////////
 
 DATA FROM INDIVIDUAL EXPERIMENTS BELOW
@@ -220,10 +260,12 @@ class JUNO : public oscillationexperiment
 };
 
 
+
+
 class DUNE : public oscillationexperiment
 {
 	public:
-		DUNE(std::string chi2file = "");
+		DUNE(const std::string ordering = "NO", const std::string t23oct = "upper", const double dcpbest = 1.);
 		~DUNE(){};
 		void setosc(oscillationparams &osc);
 	private:
@@ -235,7 +277,7 @@ class DUNE : public oscillationexperiment
 class HYPERK : public oscillationexperiment
 {
 	public:
-		HYPERK(std::string chi2file = "");
+		HYPERK(const std::string ordering = "NO", const std::string t23oct = "upper", const double dcpbest = 1.);
 		~HYPERK(){};
 		void setosc(oscillationparams &osc);
 	private:
@@ -249,7 +291,7 @@ class HYPERK : public oscillationexperiment
 class NUFIT : public oscillationexperiment
 {
 	public:
-		NUFIT(std::string chi2file = "");
+		NUFIT(const std::string ordering = "NO", const double nufitversion = 5.0);
 		~NUFIT(){};
 		void setosc(oscillationparams &osc);
 
@@ -263,9 +305,22 @@ class prior
 		double rand01();
 		double flatPrior(double r, double x1, double x2);
 		std::vector<double> randomInitialFlavor();
+		std::vector<double> random2d();
 		double gaussianPrior(double r, double x1, double x2);
 	private:
 		std::mt19937 *generator;
 		dirichlet_distribution<std::mt19937> *distgenerator_diric;
+		dirichlet_distribution<std::mt19937> *distgenerator_diric2d;
 		std::uniform_real_distribution<double> *distgenerator;
+};
+
+class gaussianprior
+{
+	public:
+		gaussianprior(double mean, double std);
+		~gaussianprior(){};
+		double gaussian();
+	private:
+		//std::mt19937 *generator;
+		boost::variate_generator<std::mt19937, boost::normal_distribution<double> > *distgenerator;
 };

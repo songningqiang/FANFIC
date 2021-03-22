@@ -440,7 +440,6 @@ std::vector<double> nonunitflavorregion::evolvefromflavor(std::vector<double> co
 
 
 //flavorregion::flavorregion() : comp_f(3, 0.){}
-flavorregion::flavorregion() {}
 double flavorregion::sq(double x)
 {
 	return x*x;
@@ -775,7 +774,8 @@ likelihood_ice::likelihood_ice(std::string year) : year(year)
 		if (year == "2020") fname += "_8yr.txt";
 		else if (year == "2028") fname += "_15yr.txt";
 		else if (year == "2040") fname += "+gen2-inice.txt";
-		else  std::cerr << "Wrong year specified, choose in between 2015, 2020, 2028 and 2040." << std::endl; 
+		else if (year == "2040-comb") fname = "data/IceCube_Chi2/combineexp.txt";
+		else  std::cerr << "Wrong year specified, choose in between 2015, 2020, 2028, 2040 and 2040-comb." << std::endl; 
 		readchi2(fname);
 		//std::cout << fname << std::endl;
 
@@ -855,6 +855,128 @@ double likelihood_ice::chisqice_2015(std::vector<double> flavinput)
 
 }
 
+void neutrinodecay::calcmatrix(std::vector<double> oscinput)
+{
+	std:vector<std::vector<double>> Vsqtmp(3, std::vector<double>(3, 0.));
+	double q12=asin(sqrt(oscinput[0]));
+	double q13=asin(sqrt(oscinput[1]));
+	double q23=asin(sqrt(oscinput[2]));
+	double dcp=oscinput[3]/180.*M_PI;
+
+	Vsqtmp[0][0] = V11s(q12, q13);
+	Vsqtmp[0][1] = V12s(q12, q13);
+	Vsqtmp[0][2] = V13s(q13);
+	Vsqtmp[1][0] = V21s(q12, q13, q23, dcp);
+	Vsqtmp[1][1] = V22s(q12, q13, q23, dcp);
+	Vsqtmp[1][2] = V23s(q13, q23);
+	Vsqtmp[2][0] = V31s(q12, q13, q23, dcp);
+	Vsqtmp[2][1] = V32s(q12, q13, q23, dcp);
+	Vsqtmp[2][2] = V33s(q13, q23);	
+	Vsq = Vsqtmp;
+
+	/*
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			std::cout << Vsq[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+	*/	
+}
+
+
+double neutrinodecay::rho(double z)
+{
+	if ((z >= 0.) && (z < zc)) return pow((1.+z),m);
+	else if ((z >= zc) && (z <= zmax)) return pow((1.+zc),m);
+	else {std::cerr << "Error, redshift must be between 0 and " << zmax << std::endl; exit(1);}
+}
+
+double neutrinodecay::h(double z)
+{
+	return sqrt(OmegaL + pow((1.+z), 3)*Omegam);
+}
+
+double neutrinodecay::Z2(double z)
+{
+	return a+b*exp(-c*z);
+}
+
+//Delta = kappa*LH*log(Z2)/Enu
+double neutrinodecay::Delta(double kappa, double EnuTeV, double z)
+{
+	return prefactor*kappa*LH/EnuTeV*Z2(z);
+}
+
+double neutrinodecay::D(double kappa, double EnuTeV, double z)
+{
+	return pow(Z2(z), -prefactor*kappa*LH/EnuTeV);
+}
+
+//compute c_i^beta
+void neutrinodecay::cbeta(std::vector<double> comp_i, std::vector<std::vector<double>> &cmatrix)
+{
+	double sum = 0.;
+	for (int k = 0; k < 3; ++k)
+		for (int i = 0; i < 3; ++i)
+		{
+			cmatrix[i][k] = 0.;
+			for (int j = 0; j < 3; ++j)
+			{
+				cmatrix[i][k] += Vsq[j][i]*comp_i[j];
+			}
+			cmatrix[i][k] *= Vsq[k][i];
+		}
+}
+
+double neutrinodecay::Eint(double c1, double c2, double c3, double Delta2, double Delta3, double EnuTeV, double z)
+{
+	return pow(EnuTeV, 1.-gamma)*(c1/(1.-gamma) + 
+		c2*boost::math::tgamma(gamma-1., Delta2)*pow(Delta2, 1.-gamma) + 
+		c3*boost::math::tgamma(gamma-1., Delta3)*pow(Delta3, 1.-gamma));
+}
+
+double neutrinodecay::trapz(std::function<double(double)> func, double start, double end, int Nbins)
+{
+    double step = (end-start)/Nbins;
+    double integral = 0.5*(func(start)+func(end));
+    for (int i = 0; i < Nbins; ++i)
+    {
+        integral += func(start+step*i);
+    }
+    integral *= step;
+    return integral;
+}
+
+void neutrinodecay::flavorcomp(double kappa2, double kappa3, std::vector<double> comp_i, std::vector<double> oscinput, std::vector<double> &comp_f)
+{
+	calcmatrix(oscinput);
+	std:vector<std::vector<double>> cmatrix(3, std::vector<double>(3, 0.));
+	cbeta(comp_i, cmatrix);
+	double sum = 0;
+	for (int i = 0; i < 3; ++i)
+	{
+		
+		auto f = [this, cmatrix, i, kappa2, kappa3](double z) {
+			return rho(z)/h(z)*pow((1.+z), -gamma)*
+			(Eint(cmatrix[0][i], cmatrix[1][i], cmatrix[2][i], Delta(kappa2, Enumax, z), Delta(kappa3, Enumax, z), Enumax, z)
+			-Eint(cmatrix[0][i], cmatrix[1][i], cmatrix[2][i], Delta(kappa2, Enumin, z), Delta(kappa3, Enumin, z), Enumin, z));
+		};
+		//comp_f[i] = boost::math::quadrature::trapezoidal(f, 0., zmax);
+		comp_f[i] = trapz(f, 0., zmax, 100);
+		sum += comp_f[i];
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		comp_f[i] /= sum;
+	}
+
+
+}
+
 
 /* /////////////////////////////////////////////////////////////////////////////
 
@@ -878,12 +1000,39 @@ void JUNO::setosc(oscillationparams &osc)
 }
 
 
-
-
-DUNE::DUNE(std::string chi2file) : oscillationexperiment(chi2file)
+DUNE::DUNE(const std::string ordering, const std::string t23oct, const double dcpbest)
 {
-	readchi2(chi2file);
+	std::string fname = "data/deltacp_theta23sq_Chi2/deltacp_theta23";
+	if (t23oct == "upper") fname += "_";
+	else if (t23oct == "lower") fname += "_woct_";
+	else if (t23oct == "max") fname += "_max_";
+	else {std::cout << "Wrong octant." << std::endl; exit(1);}		
+	if (ordering == "NO") fname += "NH";
+	else if (ordering == "IO") fname += "IH";
+	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}	
+	fname += "_cursol";
+
+	if (ordering == "NO")
+	{
+		if (dcpbest == 0.) fname += "_delta0";
+		else if (dcpbest == 0.5) fname += "_delta0.5";
+		else if (dcpbest == 1.) fname += "";
+		else {std::cout << "Wrong dcp specified, must choose in between 0, 0.5 and 1 for NO." << std::endl; exit(1);}
+	}
+	if (ordering == "IO")
+	{
+		if (dcpbest == 0.) fname += "_delta0";
+		else if (dcpbest == 1.) fname += "_delta1.0";
+		else if (dcpbest == 1.5) fname += "";
+		else {std::cout << "Wrong dcp specified, must choose in between 0, 1 and 1.5 for IO." << std::endl; exit(1);}
+	}
+			
+	fname += ".dat";
+	schi2file = fname;
+	//std::cout << fname << std::endl;
+	readchi2(schi2file);	
 }
+
 void DUNE::setosc(oscillationparams &osc) 
 {
 	if (t13sqsigma < osc.get13plus()) osc.set13(osc.get13best(), t13sqsigma, osc.get13minus());
@@ -895,48 +1044,50 @@ void DUNE::setosc(oscillationparams &osc)
 
 /* Data from the HyperK experiment. Numbers from https://arxiv.org/pdf/1805.04163.pdf */
 
-HYPERK::HYPERK(std::string chi2file) : oscillationexperiment(chi2file)
+HYPERK::HYPERK(const std::string ordering, const std::string t23oct, const double dcpbest)
 {
-	readchi2(chi2file);
+	std:: string fname = "data/deltacp_theta23sq_Chi2/deltacp_theta23";
+	if (t23oct == "upper") fname += "_";
+	else if (t23oct == "lower") fname += "_woct_";
+	else if (t23oct == "max") fname += "_max_";
+	else {std::cout << "Wrong octant." << std::endl; exit(1);}		
+	if (ordering == "NO") fname += "NH";
+	else if (ordering == "IO") fname += "IH";
+	else {std::cout << "Wrong mass ordering." << std::endl; exit(1);}
+	fname += "_HK";
+	if (ordering == "NO")
+	{
+		if (dcpbest == 0.) fname += "_delta0";
+		else if (dcpbest == 0.5) fname += "_delta0.5";
+		else if (dcpbest == 1.) fname += "";
+		else {std::cout << "Wrong dcp specified, must choose in between 0, 0.5 and 1 for NO." << std::endl; exit(1);}
+	}
+	if (ordering == "IO")
+	{
+		if (dcpbest == 0.) fname += "_delta0";
+		else if (dcpbest == 1.) fname += "_delta1.0";
+		else if (dcpbest == 1.5) fname += "";
+		else {std::cout << "Wrong dcp specified, must choose in between 0, 1 and 1.5 for IO." << std::endl; exit(1);}
+	}
+	fname += ".dat";	
+	schi2file = fname;
+	//std::cout << fname << std::endl;
+	readchi2(schi2file);	
 }
 void HYPERK::setosc(oscillationparams &osc) {}
-//determination of deltaCP from hyperK is still premature
-/*
-void HYPERK::setosc(oscillationparams &osc)
+
+
+NUFIT::NUFIT(const std::string ordering, const double nufitversion)
 {
-	//set the standard deviation to be the smaller one between the curret value and
-	//the expected experimental value to be considered
-	if (dcpsigma < osc.getdcpplus()) osc.setdcp(osc.getdcpbest(), dcpsigma, osc.getdcpminus());
-    if (dcpsigma < osc.getdcpminus()) osc.setdcp(osc.getdcpbest(), osc.getdcpplus(),dcpsigma);
-    t23sqsigma = get_ds23(osc);
-    if (t23sqsigma < osc.get23plus()) osc.set23(osc.get23best(), t23sqsigma, osc.get23minus());
-    if (t23sqsigma < osc.get23minus()) osc.set23(osc.get23best(), osc.get23plus(), t23sqsigma);
-
-    //Delta m23
-    if (dm23sigma < osc.getdm31minus()) osc.setdm31(osc.getdm31best(), dm23sigma, osc.getdm31minus());
-    if (dm23sigma < osc.get23minus()) osc.set23(osc.get23best(), osc.getdm31plus(), dm23sigma);
-
-}
-
-double HYPERK::get_ds23(oscillationparams &osc)
-{
-	double dst;
-	double sin23 = osc.get12best();
-	// Polynomial fit to table in TDR. This is wrong
-	dst =  -3.8*sin23*sin23 + 3.83*sin23 - 0.948;
-	if (dst < 0.0)
+	std::string fname = "";
+	if (nufitversion >= 2.0)
 	{
-	std::cout << "This fit for hyperK was a great idea but it doesn't work, sorry";
-	dst  = 0.0;
+		fname += "data/deltacp_theta23sq_Chi2/v"+std::to_string(int(nufitversion*10))+".release-data-"+ordering+"_s23sq_dcp.dat";
 	}
-    return dst;
-}
-*/
-
-NUFIT::NUFIT(std::string chi2file) : oscillationexperiment(chi2file)
-{
-	if (chi2file == "") std::cout << "Warning: Nufit chi2 is supposed to be used but no chi2 table served, this could happen is Nufit version < 2.0\n" << std::endl;
-	else readchi2(chi2file);
+	if (fname == "") std::cout << "Warning: Nufit chi2 is supposed to be used but no chi2 table served, this could happen is Nufit version < 2.0\n" << std::endl;
+	else readchi2(fname);
+	schi2file = fname;
+	//std::cout << fname << std::endl;
 }
 void NUFIT::setosc(oscillationparams &osc) {}
 
@@ -950,14 +1101,21 @@ prior::prior()
     std::random_device rd;
     auto rng = new std::mt19937 (rd());	
 	auto dis_diric = new dirichlet_distribution<std::mt19937> ({1, 1, 1});
+	auto dis_diric2d = new dirichlet_distribution<std::mt19937> ({1, 1});
 	generator = rng;
 	distgenerator = dis;
 	distgenerator_diric = dis_diric;
+	distgenerator_diric2d = dis_diric2d;
 }
 
 std::vector<double> prior::randomInitialFlavor()
 {
 	return (*distgenerator_diric) (*generator);
+}
+
+std::vector<double> prior::random2d()
+{
+	return (*distgenerator_diric2d) (*generator);
 }
 
 double prior::rand01()
@@ -984,3 +1142,19 @@ double prior::gaussianPrior(double r, double x1, double x2)
        	return ( x1 + x2 * sqrt( 2.0 ) * dierfc( 2.0 * ( 1.0 - r ) ) );
 }
 */
+
+
+gaussianprior::gaussianprior(double mean, double std)
+{
+    std::random_device rd;
+    auto rng = new std::mt19937 (rd());
+    auto gaussiandist = new boost::normal_distribution<double> (mean, std);	
+    auto gaussiangen = new boost::variate_generator<std::mt19937, boost::normal_distribution<double> > ((*rng), (*gaussiandist));
+	//generator = rng;
+	distgenerator = gaussiangen;
+}
+
+double gaussianprior::gaussian()
+{
+	return (*distgenerator) ();
+}
