@@ -39,7 +39,7 @@ Other codes can also be compiled in a similar way by referring to the Makefile.
 
 **infersourcefraction.cc**: infer the posterior of the fraction of different production meachanisms in the source (k_\pi, k_\mu, k_n) (pion decay, damped muon, neutrond decay) with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
 
-**infersourcefraction_kpikmu.cc**: infer the posterior of the fraction of different production meachanisms in the source (k_\pi, k_\mu, 0) (pion decay, damped muon, neutrond decay, k_\pi+k_\mu=1), with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
+**infersourcefraction_kpikmu.cc**: infer the posterior of the fraction of different neutrino production meachanisms in the source (k_\pi, k_\mu, 0) (pion decay, damped muon, neutrond decay, k_\pi+k_\mu=1), with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
 
 **neutrinodecay.cc**: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming certain source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
 
