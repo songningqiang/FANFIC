@@ -23,7 +23,14 @@ Prior to run, please specify the number of samples, NuFIT version, the oscillati
 The code will draw samples according to the priors on source flavor compositions and neutrino oscillation parameters., and then calculate the Earth flavor composition and the correpsonding \chi^2. The output file is in the format 
 f_{e,\oplus}, f_{\mu,\oplus}, f_{\tau,\oplus}, \chi^2.
 
-
+nonunitarity.cc: find the flavor compositions at Earth from certain source flavor compositions assuming nonunitarity  or future oscillation experiments. To compile and run it, simply
+```
+make nonunitarity
+```
+and
+```
+./nonunitarity
+```
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
