@@ -2,7 +2,7 @@
 
 Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Aaron Vincent, Carlos A. Arguelles
 
-Reference: arXiv: 2012.12893
+Reference: arXiv: [2012.12893](https://arxiv.org/pdf/2012.12893.pdf)
 
 ## Introduction and getting started
 
