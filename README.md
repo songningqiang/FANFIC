@@ -20,8 +20,10 @@ Prior to run, please specify the number of samples, NuFIT version, the oscillati
 ```
 #pragma omp parallel for 
 ```
-The code will draw samples according to the priors on source flavor compositions and neutrino oscillation parameters., and then calculate the Earth flavor composition and the correpsonding $\chi^2$. The output file is in the format 
+The code will draw samples according to the priors on source flavor compositions and neutrino oscillation parameters., and then calculate the Earth flavor composition and the correpsonding \chi^2. The output file is in the format 
 f_{e,\oplus}, f_{\mu,\oplus}, f_{\tau,\oplus}, \chi^2.
+
+
 
 The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
