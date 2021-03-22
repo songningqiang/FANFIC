@@ -47,7 +47,6 @@ Other codes can also be compiled in a similar way by referring to the Makefile.
 
 **neutrinodecay_kpigaussian.cc**: infer the posterior of the neutrino decay rate m/\tau by integrating neutrino sources at different redshifts and by assuming gaussian source flavor compositions with the oscillation parameters constrained by NuFIT or future oscillation experiments and the Earth flavor compositions constrained by IceCube or future neutrino telescopes.
 
-The main code is main.cc which outputs four columns in the output file: alpha_e, alpha_mu, alpha_tau, chi2. The output file can be specified by user. It can be compiled by
 
 ## Main classes:
 
