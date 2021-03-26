@@ -1,39 +1,48 @@
 CC = g++-10
-C_FLAGS = -g -I/usr/local/Cellar/boost/1.74.0/include -std=c++11 -fopenmp
+C_FLAGS = -g -I/usr/local/Cellar/boost/1.74.0/include -Iinclude -std=c++11 -fopenmp
 
-OBJECTS = main.o prototype.o
+SRC_DIR := src
+OBJ_DIR := src
+BIN_DIR := .
 
-all: $(OBJECTS)
-	$(CC) $(C_FLAGS) $(OBJECTS) -o main
+OBJECTS = $(OBJ_DIR)/prototype.o
 
-nonunitarity: nonunitarity.o prototype.o
-	$(CC) nonunitarity.o prototype.o -o nonunitarity
+EXES = main nonunitarity infersourcecomposition infersourcefraction infersourcefraction_kpikmu \
+	neutrinodecay neutrinodecay_masseigenstates neutrinodecay_kpigaussian
 
-infersourcecomposition: infersourcecomposition.o prototype.o
-	$(CC) infersourcecomposition.o prototype.o -o infersourcecomposition
+all: $(EXES)
 
-infersourcefraction: infersourcefraction.o prototype.o
-	$(CC) infersourcefraction.o prototype.o -o infersourcefraction
+main : $(OBJ_DIR)/main.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
 
-infersourcefraction_kpikmu: infersourcefraction_kpikmu.o prototype.o
-	$(CC) infersourcefraction_kpikmu.o prototype.o -o infersourcefraction_kpikmu
+nonunitarity : $(OBJ_DIR)/nonunitarity.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
 
-neutrinodecay: neutrinodecay.o prototype.o
-	$(CC) $(C_FLAGS) neutrinodecay.o prototype.o -o neutrinodecay
+infersourcecomposition : $(OBJ_DIR)/infersourcecomposition.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
 
-neutrinodecay_masseigenstates: neutrinodecay_masseigenstates.o prototype.o
-	$(CC) $(C_FLAGS) neutrinodecay_masseigenstates.o prototype.o -o neutrinodecay_masseigenstates
+infersourcefraction : $(OBJ_DIR)/infersourcefraction.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
 
-neutrinodecay_kpigaussian: neutrinodecay_kpigaussian.o prototype.o
-	$(CC) $(C_FLAGS) neutrinodecay_kpigaussian.o prototype.o -o neutrinodecay_kpigaussian
+infersourcefraction_kpikmu : $(OBJ_DIR)/infersourcefraction_kpikmu.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
+
+neutrinodecay : $(OBJ_DIR)/neutrinodecay.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
+
+neutrinodecay_masseigenstates : $(OBJ_DIR)/neutrinodecay_masseigenstates.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
+
+neutrinodecay_kpigaussian : $(OBJ_DIR)/neutrinodecay_kpigaussian.o $(OBJECTS) | $(BIN_DIR)
+	$(CC) $(C_FLAGS) $^ -o $@
 
 
-%.o: %.cc prototype.h Makefile
-	$(CC) $(C_FLAGS) -c $< -o $*.o
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cc include/prototype.h Makefile
+	$(CC) $(C_FLAGS) -c $< -o $@
+
 
 clean:
-	-rm *.o 
-	-rm main nonunitarity infersourcecomposition infersourcefraction infersourcefraction_kpikmu \
-	neutrinodecay neutrinodecay_masseigenstates  neutrinodecay_kpigaussian
+	-rm $(OBJ_DIR)/*.o 
+	-rm $(EXES)
 	
 
