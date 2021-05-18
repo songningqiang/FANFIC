@@ -5,7 +5,7 @@ Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Carlos A. Arguelles,  
 Neutrino oscillation data is provided by Shirley Li, and flavor composition data is provided by Mauricio Bustamante.
 
 Reference: arXiv: [2012.12893](https://arxiv.org/pdf/2012.12893.pdf)
-![plot](.results/figures/flavor/std/var_delta/main/fixed_fS/output_NO_upper_2020_vs_2040_contours_final.png)
+![contour_2020vs2040](./results/figures/flavor/std/var_delta/main/fixed_fS/output_NO_upper_2020_vs_2040_contours_final.png)
 ## Introduction and getting started
 
 This is a Monte Carlo code to find the flavor composition of astrophysical neutrinos at Earth from the flavor composition at the source with neutrino oscillations and new physics. The oscillation parameters are constrained by the combined analysis of NuFIT or future neutrino oscillation experiments, including JUNO, DUNE and HyperK. The Earth flavor compositions can be constrained by current IceCube data or future neutrino telescopes, including IceCube-Gen2, P-ONE, KM3NeT and TAMBO. We also consider beyond Standard Model scenarios, including non-unitarity neutrino mixing and neutrino invisible decay. Some example codes are given below.
