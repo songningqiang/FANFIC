@@ -81,7 +81,7 @@ Other codes can also be compiled in a similar way by referring to the Makefile.
 
 ## Results:
 
-Plots of the previous runs can be found in the "results" folder. plot_arrays.pdf summarizes part of the results, and more figures can be found in the "figures" folder.
+Plots of the previous runs can be found in the "results" folder. **The plotting scripts are still being updated.**
 
 ## Using the code:
 
