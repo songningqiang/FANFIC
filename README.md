@@ -1,4 +1,4 @@
-# FlavorRegion: A Monte Carlo Code to Find the Composition of Astrophysical Neutrinos
+# **FANFIC**: **F**uture **A**strophysical **N**eutrino **F**lavors **I**n **C**ontours
 
 Authors: Ningqiang Song, Shirley Li, Mauricio Bustamante, Carlos A. Arguelles,  Aaron Vincent
 
